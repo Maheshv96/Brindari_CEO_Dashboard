@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS variables (Shadcn token palette) ─────────────────────── */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  html {
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  body {
+    background-color: #f9fafb; /* gray-50 */
+    color: #111827;            /* gray-900 */
+  }
+}
+
+/* ── Component utilities ──────────────────────────────────────── */
+@layer components {
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #047857; /* emerald-700 */
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #ffffff;
+    transition: background-color 150ms;
+    outline: none;
+  }
+  .btn-primary:hover { background-color: #065f46; } /* emerald-800 */
+  .btn-primary:focus-visible {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #10b981;
+  }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db; /* gray-300 */
+    background-color: #ffffff;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;            /* gray-700 */
+    transition: background-color 150ms;
+    outline: none;
+  }
+  .btn-secondary:hover { background-color: #f9fafb; } /* gray-50 */
+  .btn-secondary:focus-visible {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #10b981;
+  }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .card {
+    border-radius: 0.75rem;    /* rounded-xl */
+    border: 1px solid #e5e7eb; /* gray-200 */
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+  }
+
+  .input {
+    display: block;
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db; /* gray-300 */
+    background-color: #ffffff;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #111827;
+    transition: border-color 150ms, box-shadow 150ms;
+    outline: none;
+  }
+  .input::placeholder { color: #9ca3af; }
+  .input:focus {
+    border-color: #10b981;     /* emerald-500 */
+    box-shadow: 0 0 0 3px rgb(16 185 129 / 0.15);
+  }
+  .input:disabled {
+    background-color: #f9fafb;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151; /* gray-700 */
+  }
+}

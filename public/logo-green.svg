@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <!-- Stem -->
+  <rect x="56.5" y="68" width="7" height="64" rx="3.5" fill="#2d6a4f"/>
+  <!-- Leaf 1: far left, dark teal -->
+  <ellipse cx="24" cy="55" rx="14" ry="26" transform="rotate(-38 24 55)" fill="#2d6a4f"/>
+  <!-- Leaf 2: center-left, dark teal -->
+  <ellipse cx="46" cy="30" rx="14" ry="26" transform="rotate(-10 46 30)" fill="#2d6a4f"/>
+  <!-- Leaf 3: center-right, sage green -->
+  <ellipse cx="74" cy="30" rx="14" ry="26" transform="rotate(10 74 30)" fill="#7aaa87"/>
+  <!-- Leaf 4: far right, light sage -->
+  <ellipse cx="96" cy="55" rx="14" ry="26" transform="rotate(38 96 55)" fill="#8ab59a"/>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Brindari Global">
+  <g transform="translate(8 8)">
+    <ellipse cx="22" cy="28" rx="6" ry="9" fill="#0F6E56" transform="rotate(-30 22 28)"/>
+    <ellipse cx="32" cy="20" rx="6" ry="9" fill="#0F6E56" transform="rotate(-15 32 20)"/>
+    <ellipse cx="44" cy="20" rx="6" ry="9" fill="#7BA88A" transform="rotate(15 44 20)"/>
+    <ellipse cx="54" cy="28" rx="6" ry="9" fill="#7BA88A" transform="rotate(30 54 28)"/>
+    <path d="M38 28 L 38 64" stroke="#0F6E56" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
