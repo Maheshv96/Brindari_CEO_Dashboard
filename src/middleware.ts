@@ -24,6 +24,7 @@ export async function middleware(req: NextRequest) {
   // Always allow public routes
   if (
     pathname.startsWith("/portal") ||
+    pathname.startsWith("/login")  ||
     pathname.startsWith("/api/")   ||
     pathname.startsWith("/_next/") ||
     pathname.includes(".")
@@ -59,14 +60,14 @@ export async function middleware(req: NextRequest) {
 
     if (!user) {
       const url = req.nextUrl.clone();
-      url.pathname = "/portal";
+      url.pathname = "/login";
       url.searchParams.set("redirect", pathname);
       return NextResponse.redirect(url);
     }
   } catch (err) {
     console.error("[middleware] auth check failed:", err);
     const url = req.nextUrl.clone();
-    url.pathname = "/portal";
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 

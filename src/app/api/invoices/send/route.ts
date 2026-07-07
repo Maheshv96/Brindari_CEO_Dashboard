@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
         <tr>
           <td style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:16px 32px;text-align:center;">
             <p style="margin:0;font-size:11px;color:#9ca3af;">
-              Brindari Exports Pvt Ltd · Chennai, India · brindari.com
+              Brindari Global · Maharashtra, India · brindari.com
             </p>
           </td>
         </tr>
