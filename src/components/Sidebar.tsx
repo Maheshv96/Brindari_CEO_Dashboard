@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, UserCheck, ShoppingCart,
@@ -72,7 +72,15 @@ const BADGE_MAP: Record<string, keyof Badges> = {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [badges, setBadges] = useState<Badges>({ leads: 0, orders: 0, invoices: 0, shipments: 0, emails: 0 });
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   // Fetch live badge counts every 60 seconds
   useEffect(() => {
@@ -179,7 +187,7 @@ export function Sidebar() {
         </a>
         <button
           className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors"
-          onClick={() => {}}>
+          onClick={handleSignOut}>
           <LogOut className="h-4 w-4 shrink-0" />
           Sign out
         </button>
