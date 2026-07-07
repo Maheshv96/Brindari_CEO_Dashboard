@@ -12,7 +12,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   if (hideSidebar) {
-    return <main className="min-h-screen bg-gray-50">{children}</main>;
+    return <main className="min-h-screen w-full overflow-y-auto bg-gray-50">{children}</main>;
   }
 
   return (
