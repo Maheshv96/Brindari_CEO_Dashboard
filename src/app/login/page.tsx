@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase";
@@ -8,7 +8,23 @@ import { BrindariLogo } from "@/components/ui/BrindariLogo";
 
 type Mode = "checking" | "signin" | "forgot" | "forgot-sent" | "set-password";
 
+function LoginSpinner() {
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center bg-gray-50">
+      <Loader2 className="h-6 w-6 animate-spin text-emerald-700" />
+    </div>
+  );
+}
+
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginSpinner />}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();
@@ -102,11 +118,7 @@ export default function LoginPage() {
   }
 
   if (mode === "checking") {
-    return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-gray-50">
-        <Loader2 className="h-6 w-6 animate-spin text-emerald-700" />
-      </div>
-    );
+    return <LoginSpinner />;
   }
 
   const titles: Record<Mode, string> = {
