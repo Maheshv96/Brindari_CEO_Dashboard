@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Share2, Globe, ThumbsUp, MessageCircle, Repeat2, Users,
   Target, Calendar, MapPin, TrendingUp, Edit3, Check, X,
-  ChevronRight, Eye, Link2, Package, RefreshCw, BarChart2,
+  ChevronRight, Eye, Link2, Package, BarChart2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -401,7 +401,7 @@ function FacebookTab() {
         </div>
 
         <div className="space-y-1.5">
-          {filteredGroups.map((g, i) => {
+          {filteredGroups.map((g) => {
             const realIdx = groups.findIndex(gr => gr.name === g.name);
             return (
               <div key={g.name} className={cn("flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors cursor-pointer",
