@@ -10,13 +10,15 @@ export async function GET() {
   }
 
   try {
-    const since = Math.floor((Date.now() - 30 * 24 * 60 * 60 * 1000) / 1000);
-    const until = Math.floor(Date.now() / 1000);
-
-    const [pageRes, postsRes, insightsRes] = await Promise.all([
-      fetch(`${BASE}/${PAGE_ID}?fields=name,fan_count,followers_count&access_token=${TOKEN}`),
-      fetch(`${BASE}/${PAGE_ID}/posts?fields=id,message,story,created_time,likes.summary(true),comments.summary(true),shares&limit=20&access_token=${TOKEN}`),
-      fetch(`${BASE}/${PAGE_ID}/insights?metric=page_impressions_unique,page_post_engagements,page_fan_adds_unique&period=day&since=${since}&until=${until}&access_token=${TOKEN}`),
+    const [pageRes, eventsRes] = await Promise.all([
+      fetch(
+        `${BASE}/${PAGE_ID}?fields=name,fan_count,followers_count&access_token=${TOKEN}`
+      ),
+      fetch(
+        `${BASE}/${PAGE_ID}/events` +
+        `?fields=id,name,description,start_time,end_time,place,attending_count,interested_count,cover` +
+        `&time_filter=upcoming&limit=20&access_token=${TOKEN}`
+      ),
     ]);
 
     if (!pageRes.ok) {
@@ -24,16 +26,32 @@ export async function GET() {
       return NextResponse.json({ connected: false, error: err?.error?.message ?? "Auth failed" });
     }
 
-    const [page, postsData, insightsData] = await Promise.all([
+    const [page, eventsData] = await Promise.all([
       pageRes.json(),
-      postsRes.json(),
-      insightsRes.json(),
+      eventsRes.json(),
     ]);
 
-    const sumMetric = (name: string) =>
-      (insightsData.data ?? [])
-        .find((d: { name: string }) => d.name === name)
-        ?.values?.reduce((acc: number, v: { value: number }) => acc + (v.value ?? 0), 0) ?? 0;
+    const events = (eventsData.data ?? []).map((e: {
+      id: string;
+      name: string;
+      description?: string;
+      start_time: string;
+      end_time?: string;
+      attending_count?: number;
+      interested_count?: number;
+      place?: { name?: string; location?: { city?: string; country?: string } };
+      cover?: { source?: string };
+    }) => ({
+      id: e.id,
+      name: e.name,
+      description: e.description ?? "",
+      startTime: e.start_time,
+      endTime: e.end_time ?? null,
+      attending: e.attending_count ?? 0,
+      interested: e.interested_count ?? 0,
+      place: e.place?.name ?? e.place?.location?.city ?? null,
+      coverUrl: e.cover?.source ?? null,
+    }));
 
     return NextResponse.json({
       connected: true,
@@ -42,25 +60,7 @@ export async function GET() {
         followers: page.followers_count ?? page.fan_count ?? 0,
         fans: page.fan_count ?? 0,
       },
-      posts: (postsData.data ?? []).map((p: {
-        id: string; message?: string; story?: string;
-        created_time: string;
-        likes?: { summary?: { total_count?: number } };
-        comments?: { summary?: { total_count?: number } };
-        shares?: { count?: number };
-      }) => ({
-        id: p.id,
-        message: p.message ?? p.story ?? "",
-        createdAt: p.created_time,
-        likes: p.likes?.summary?.total_count ?? 0,
-        comments: p.comments?.summary?.total_count ?? 0,
-        shares: p.shares?.count ?? 0,
-      })),
-      insights: {
-        monthlyReach: sumMetric("page_impressions_unique"),
-        engagements: sumMetric("page_post_engagements"),
-        newFans: sumMetric("page_fan_adds_unique"),
-      },
+      events,
       syncedAt: new Date().toISOString(),
     });
   } catch {
