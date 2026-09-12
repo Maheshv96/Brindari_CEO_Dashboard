@@ -55,18 +55,6 @@ const DEFAULT_FB_KPI: KpiData = {
   profileViews: 0,
 };
 
-const DEFAULT_LI_KPI: KpiData = {
-  postsScheduled: 0,
-  postsPublished: 0,
-  estimatedReach: 0,
-  likes: 0,
-  comments: 0,
-  shares: 0,
-  groupsPosted: 0,
-  sampleLeads: 0,
-  linkClicks: 0,
-  profileViews: 0,
-};
 
 const SCHEDULED_POSTS: ScheduledPost[] = [
   {
@@ -312,7 +300,7 @@ function FacebookTab() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-gray-900">Performance KPIs</h2>
-          <span className="text-xs text-gray-400 flex items-center gap-1"><Edit3 className="h-3 w-3" /> Click "Update" to log actuals</span>
+          <span className="text-xs text-gray-400 flex items-center gap-1"><Edit3 className="h-3 w-3" /> Click &quot;Update&quot; to log actuals</span>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <KpiCard title="Posts Scheduled" value={kpi.postsScheduled} icon={Calendar} color="bg-blue-50 text-blue-600" editable onEdit={v => updateKpi("postsScheduled", v)} />
