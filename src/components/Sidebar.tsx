@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, UserCheck, ShoppingCart,
   TrendingUp, FileText, Ship, FolderOpen, Calculator,
-  Factory, Mail, ExternalLink, LogOut, Telescope, Share2,
+  Factory, Mail, ExternalLink, LogOut, Telescope,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrindariLogo } from "@/components/ui/BrindariLogo";
@@ -49,12 +49,6 @@ const NAV_GROUPS = [
     items: [
       { href: "/suppliers",          label: "Suppliers",          icon: Factory    },
       { href: "/suppliers/discover", label: "Discover Suppliers", icon: Telescope  },
-    ],
-  },
-  {
-    label: "Marketing",
-    items: [
-      { href: "/social", label: "Social Marketing", icon: Share2 },
     ],
   },
 ];
