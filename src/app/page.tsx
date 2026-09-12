@@ -14,13 +14,23 @@ import type { Lead, Order, Invoice } from "@/lib/supabase";
 // ── Types ─────────────────────────────────────────────────────────────────────
 type RecentOrder = Order & { buyers: { company: string } | null };
 
-function computeGreeting() {
-  const h = new Date().getHours();
+function computeGreeting(h: number) {
+  if (h < 5)  return "Burning the midnight oil";
   if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  if (h < 21) return "Good evening";
+  if (h < 14) return "Good afternoon";
+  if (h < 18) return "Good evening";
+  if (h < 21) return "Winding down";
   return "Good night";
 }
+
+const STRATEGY_TIPS = [
+  "Post at 9 AM · 1 PM · 6 PM IST for max reach",
+  "19 Facebook groups ready for outreach rotation",
+  "Target: 50K monthly reach · 15 sample leads",
+  "Germany · UAE · UK are your highest-priority markets",
+  "Rotate group posts — max 3–4 groups per day",
+  "LinkedIn Phase 2: target procurement heads in DACH",
+];
 
 // ── KPI card ──────────────────────────────────────────────────────────────────
 function KpiCard({ title, value, sub, icon: Icon, href, color, trend }: {
@@ -148,16 +158,23 @@ function RevenueTrend({ orders }: { orders: Order[] }) {
 export default function OverviewPage() {
   const supabase = createClient();
 
-  const [greeting, setGreeting] = useState(computeGreeting());
+  const [now, setNow] = useState(new Date());
+  const [tipIdx, setTipIdx] = useState(0);
   const [leads,    setLeads]    = useState<Lead[]>([]);
   const [orders,   setOrders]   = useState<RecentOrder[]>([]);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading,  setLoading]  = useState(true);
 
+  const greeting = computeGreeting(now.getHours());
+
   useEffect(() => {
-    const tick = () => setGreeting(computeGreeting());
-    const id = setInterval(tick, 60_000);
+    const id = setInterval(() => setNow(new Date()), 1_000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => setTipIdx(i => (i + 1) % STRATEGY_TIPS.length), 4_000);
     return () => clearInterval(id);
   }, []);
 
@@ -234,9 +251,18 @@ export default function OverviewPage() {
       {/* Greeting */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{greeting}, Mahesh 👋</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Here&apos;s your business snapshot — {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
+          <div className="flex items-center gap-2 text-xs text-gray-400 mb-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-mono tabular-nums">
+              {now.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", second: "2-digit" })} IST
+            </span>
+            <span>·</span>
+            <span>{now.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "long", day: "numeric", month: "short", year: "numeric" })}</span>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">{greeting}, Mahesh ✦</h1>
+          <p className="mt-1 text-sm text-gray-400 flex items-center gap-1.5">
+            <span className="text-emerald-500">→</span>
+            <span key={tipIdx} className="transition-opacity duration-500">{STRATEGY_TIPS[tipIdx]}</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
