@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   Users, ShoppingCart, DollarSign, FileText, Ship,
   Calculator, Mail, ArrowRight, TrendingUp,
-  AlertTriangle, Clock, Flame, RefreshCw,
+  AlertTriangle, Clock, Flame,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { formatUSD, STATUS_COLORS, cn } from "@/lib/utils";
@@ -22,15 +22,6 @@ function computeGreeting(h: number) {
   if (h < 21) return "Winding down";
   return "Good night";
 }
-
-const STRATEGY_TIPS = [
-  "Post at 9 AM · 1 PM · 6 PM IST for max reach",
-  "19 Facebook groups ready for outreach rotation",
-  "Target: 50K monthly reach · 15 sample leads",
-  "Germany · UAE · UK are your highest-priority markets",
-  "Rotate group posts — max 3–4 groups per day",
-  "LinkedIn Phase 2: target procurement heads in DACH",
-];
 
 // ── KPI card ──────────────────────────────────────────────────────────────────
 function KpiCard({ title, value, sub, icon: Icon, href, color, trend }: {
@@ -159,14 +150,11 @@ export default function OverviewPage() {
   const supabase = createClient();
 
   const [now, setNow] = useState(new Date());
-  const [tipIdx, setTipIdx] = useState(0);
   const [leads,    setLeads]    = useState<Lead[]>([]);
   const [orders,   setOrders]   = useState<RecentOrder[]>([]);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading,  setLoading]  = useState(true);
-  const [syncing,  setSyncing]  = useState(false);
-  const [lastSynced, setLastSynced] = useState<Date | null>(null);
 
   const greeting = computeGreeting(now.getHours());
 
@@ -176,33 +164,24 @@ export default function OverviewPage() {
   }, []);
 
   useEffect(() => {
-    const id = setInterval(() => setTipIdx(i => (i + 1) % STRATEGY_TIPS.length), 4_000);
-    return () => clearInterval(id);
-  }, []);
-
-  async function fetchAll(manual = false) {
-    if (manual) setSyncing(true);
-    const [
-      { data: leadsData },
-      { data: ordersData },
-      { data: allOrdersData },
-      { data: invoicesData },
-    ] = await Promise.all([
-      supabase.from("leads").select("*").order("created_at", { ascending: false }),
-      supabase.from("orders").select("*, buyers(company)").order("created_at", { ascending: false }).limit(5),
-      supabase.from("orders").select("*").order("created_at", { ascending: false }),
-      supabase.from("invoices").select("*").order("created_at", { ascending: false }),
-    ]);
-    setLeads((leadsData ?? []) as Lead[]);
-    setOrders((ordersData ?? []) as RecentOrder[]);
-    setAllOrders((allOrdersData ?? []) as Order[]);
-    setInvoices((invoicesData ?? []) as Invoice[]);
-    setLoading(false);
-    setSyncing(false);
-    setLastSynced(new Date());
-  }
-
-  useEffect(() => {
+    async function fetchAll() {
+      const [
+        { data: leadsData },
+        { data: ordersData },
+        { data: allOrdersData },
+        { data: invoicesData },
+      ] = await Promise.all([
+        supabase.from("leads").select("*").order("created_at", { ascending: false }),
+        supabase.from("orders").select("*, buyers(company)").order("created_at", { ascending: false }).limit(5),
+        supabase.from("orders").select("*").order("created_at", { ascending: false }),
+        supabase.from("invoices").select("*").order("created_at", { ascending: false }),
+      ]);
+      setLeads((leadsData ?? []) as Lead[]);
+      setOrders((ordersData ?? []) as RecentOrder[]);
+      setAllOrders((allOrdersData ?? []) as Order[]);
+      setInvoices((invoicesData ?? []) as Invoice[]);
+      setLoading(false);
+    }
     fetchAll();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -266,10 +245,6 @@ export default function OverviewPage() {
             <span>{now.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "long", day: "numeric", month: "short", year: "numeric" })}</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">{greeting}, Mahesh ✦</h1>
-          <p className="mt-1 text-sm text-gray-400 flex items-center gap-1.5">
-            <span className="text-emerald-500">→</span>
-            <span key={tipIdx} className="transition-opacity duration-500">{STRATEGY_TIPS[tipIdx]}</span>
-          </p>
         </div>
         <div className="flex items-center gap-2">
           {kpi.overdueCount > 0 && (
@@ -282,21 +257,6 @@ export default function OverviewPage() {
               <Clock className="h-3.5 w-3.5" /> {kpi.staleLeads} lead{kpi.staleLeads > 1 ? "s" : ""} need follow-up
             </span>
           )}
-          <div className="flex flex-col items-end gap-0.5">
-            <button
-              onClick={() => fetchAll(true)}
-              disabled={syncing}
-              className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 disabled:opacity-60 transition-colors"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
-              {syncing ? "Syncing…" : "Sync Now"}
-            </button>
-            {lastSynced && (
-              <span className="text-[10px] text-gray-400">
-                Last synced {lastSynced.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" })} IST
-              </span>
-            )}
-          </div>
         </div>
       </div>
 
