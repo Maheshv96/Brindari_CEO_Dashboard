@@ -23,17 +23,6 @@ interface KpiData {
   profileViews: number;
 }
 
-interface ScheduledPost {
-  id: string;
-  platform: "facebook" | "linkedin";
-  scheduledAt: string;
-  caption: string;
-  type: string;
-  status: "scheduled" | "published" | "draft";
-  reach?: number;
-  likes?: number;
-  comments?: number;
-}
 
 interface GroupEntry {
   name: string;
@@ -43,11 +32,22 @@ interface GroupEntry {
 }
 
 // ── Sync types ────────────────────────────────────────────────────────────────
+interface FBEvent {
+  id: string;
+  name: string;
+  description: string;
+  startTime: string;
+  endTime: string | null;
+  attending: number;
+  interested: number;
+  place: string | null;
+  coverUrl: string | null;
+}
+
 interface FBSyncData {
   connected: boolean;
   page?: { name: string; followers: number; fans: number };
-  posts?: Array<{ id: string; message: string; createdAt: string; likes: number; comments: number; shares: number }>;
-  insights?: { monthlyReach: number; engagements: number; newFans: number };
+  events?: FBEvent[];
   syncedAt?: string;
   error?: string;
 }
@@ -170,24 +170,6 @@ const DEFAULT_FB_KPI: KpiData = {
 };
 
 
-const SCHEDULED_POSTS: ScheduledPost[] = [
-  {
-    id: "sun-1pm",
-    platform: "facebook",
-    scheduledAt: "2026-09-13T07:30:00Z", // 1 PM IST
-    caption: "💚 Attention wellness brands & supplement makers: Are you looking for a reliable moringa ingredient supplier with full documentation? Brindari Global supplies Moringa Leaf Powder, Dried Moringa Leaf, Moringa Seed Oil, and Moringa Tea Bags. FSSAI Registered · APEDA RCMC Certified · Lab-tested.",
-    type: "Wellness Brand Outreach",
-    status: "scheduled",
-  },
-  {
-    id: "sun-6pm",
-    platform: "facebook",
-    scheduledAt: "2026-09-13T12:30:00Z", // 6 PM IST
-    caption: "📦 Bulk moringa buyers — before you commit to a 100kg+ order, start with a FREE sample. We understand large import decisions need confidence. 100g–500g premium moringa powder · Full Certificate of Analysis (CoA) · FSSAI & APEDA certification documents.",
-    type: "Bulk Buyer Free Sample CTA",
-    status: "scheduled",
-  },
-];
 
 const FACEBOOK_GROUPS: GroupEntry[] = [
   { name: "Moringa & Superfood Wholesale Buyers", members: "12.4K", posted: false, category: "Buyers" },
@@ -309,74 +291,26 @@ function KpiCard({
   );
 }
 
-// ── Post row ──────────────────────────────────────────────────────────────────
-function PostRow({ post }: { post: ScheduledPost }) {
-  const dt = new Date(post.scheduledAt);
-  // Display in IST
-  const istStr = dt.toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  return (
-    <div className="flex items-start gap-3 py-3 border-b border-gray-50 last:border-0">
-      <div className="flex flex-col items-center gap-0.5 shrink-0 mt-0.5">
-        <div className={cn("h-2 w-2 rounded-full mt-1",
-          post.status === "published" ? "bg-emerald-500" :
-          post.status === "scheduled" ? "bg-blue-400" : "bg-gray-300")} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold",
-            post.status === "published" ? "bg-emerald-100 text-emerald-700" :
-            post.status === "scheduled" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-500"
-          )}>
-            {post.status === "published" ? "✓ Published" : post.status === "scheduled" ? "🕐 Scheduled" : "Draft"}
-          </span>
-          <span className="text-xs font-medium text-gray-600">{post.type}</span>
-          <span className="text-xs text-gray-400">{istStr} IST</span>
-        </div>
-        <p className="text-sm text-gray-600 mt-1 line-clamp-2 leading-relaxed">{post.caption}</p>
-        {post.reach !== undefined && (
-          <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
-            <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{post.reach.toLocaleString()} reach</span>
-            <span className="flex items-center gap-1"><ThumbsUp className="h-3 w-3" />{post.likes ?? 0}</span>
-            <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" />{post.comments ?? 0}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 // ── Facebook Tab ──────────────────────────────────────────────────────────────
 function FacebookTab({ fbData }: { fbData: FBSyncData | null }) {
   const [kpi, setKpi] = useState<KpiData>(DEFAULT_FB_KPI);
   const [groups, setGroups] = useState<GroupEntry[]>(FACEBOOK_GROUPS);
-  const [posts, setPosts] = useState<ScheduledPost[]>(SCHEDULED_POSTS.filter(p => p.platform === "facebook"));
   const [groupFilter, setGroupFilter] = useState("All");
 
   useEffect(() => {
     setKpi(loadFromStorage("brindari_fb_kpi", DEFAULT_FB_KPI));
     setGroups(loadFromStorage("brindari_fb_groups", FACEBOOK_GROUPS));
-    setPosts(loadFromStorage("brindari_fb_posts", SCHEDULED_POSTS.filter(p => p.platform === "facebook")));
   }, []);
 
-  // Merge live API data into KPI state when available
+  // Merge live event attendance into KPI when available
   useEffect(() => {
-    if (!fbData?.connected || !fbData.insights) return;
+    if (!fbData?.connected || !fbData.events) return;
+    const totalAttending = fbData.events.reduce((s, e) => s + e.attending, 0);
+    const totalInterested = fbData.events.reduce((s, e) => s + e.interested, 0);
     setKpi(prev => ({
       ...prev,
-      estimatedReach: fbData.insights!.monthlyReach || prev.estimatedReach,
-      likes: fbData.posts?.reduce((s, p) => s + p.likes, 0) ?? prev.likes,
-      comments: fbData.posts?.reduce((s, p) => s + p.comments, 0) ?? prev.comments,
-      shares: fbData.posts?.reduce((s, p) => s + p.shares, 0) ?? prev.shares,
-      postsPublished: fbData.posts?.length ?? prev.postsPublished,
+      estimatedReach: totalAttending + totalInterested || prev.estimatedReach,
     }));
   }, [fbData]);
 
@@ -471,32 +405,72 @@ function FacebookTab({ fbData }: { fbData: FBSyncData | null }) {
         </div>
       </div>
 
-      {/* Scheduled Posts */}
+      {/* Page Events */}
       <div className="card p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-blue-500" /> Post Schedule
+            <Calendar className="h-4 w-4 text-blue-500" /> Upcoming Page Events
           </h2>
-          <span className="text-xs text-gray-400">{posts.filter(p => p.status === "scheduled").length} scheduled · {posts.filter(p => p.status === "published").length} published</span>
+          {fbData?.connected && (
+            <span className="text-xs text-emerald-600 flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live from Facebook
+            </span>
+          )}
+          {!fbData?.connected && (
+            <span className="text-xs text-gray-400">Connect Facebook to see live events</span>
+          )}
         </div>
 
-        {posts.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">No posts yet. Schedule your first post on Facebook.</p>
+        {fbData?.connected && fbData.events && fbData.events.length > 0 ? (
+          <div className="space-y-3">
+            {fbData.events.map(e => {
+              const start = new Date(e.startTime);
+              const istStr = start.toLocaleString("en-IN", {
+                timeZone: "Asia/Kolkata",
+                weekday: "short", month: "short", day: "numeric",
+                hour: "2-digit", minute: "2-digit", hour12: true,
+              });
+              return (
+                <div key={e.id} className="flex items-start gap-4 rounded-xl border border-gray-100 p-4 hover:border-blue-200 transition-colors">
+                  {e.coverUrl && (
+                    <img src={e.coverUrl} alt={e.name}
+                      className="h-16 w-24 rounded-lg object-cover shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{e.name}</p>
+                    <p className="text-xs text-blue-600 mt-0.5 flex items-center gap-1">
+                      <Calendar className="h-3 w-3" /> {istStr} IST
+                    </p>
+                    {e.place && (
+                      <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" /> {e.place}
+                      </p>
+                    )}
+                    {e.description && (
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{e.description}</p>
+                    )}
+                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                      <span className="flex items-center gap-1"><Users className="h-3 w-3" />{e.attending.toLocaleString()} attending</span>
+                      <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{e.interested.toLocaleString()} interested</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : fbData?.connected && fbData.events?.length === 0 ? (
+          <div className="text-center py-10">
+            <Calendar className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+            <p className="text-sm text-gray-400">No upcoming events on your page.</p>
+            <p className="text-xs text-gray-300 mt-1">Create an event on Facebook and it will appear here automatically.</p>
+          </div>
         ) : (
-          <div>
-            {posts.map(p => <PostRow key={p.id} post={p} />)}
+          <div className="text-center py-10">
+            <Calendar className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+            <p className="text-sm text-gray-400">Add your Facebook Page Access Token to see live events.</p>
+            <p className="text-xs text-gray-300 mt-1">Only <code className="bg-gray-100 px-1 rounded">pages_read_engagement</code> permission needed.</p>
           </div>
         )}
-
-        {/* Upcoming schedule hint */}
-        <div className="mt-4 rounded-lg bg-blue-50 border border-blue-100 px-4 py-3">
-          <p className="text-xs font-semibold text-blue-800 mb-1.5">📅 Magic Outreach Times (IST)</p>
-          <div className="flex gap-3 text-xs text-blue-700">
-            <span className="flex items-center gap-1">⏰ <strong>9:00 AM</strong> — Morning audience</span>
-            <span className="flex items-center gap-1">⏰ <strong>1:00 PM</strong> — Lunch scroll</span>
-            <span className="flex items-center gap-1">⏰ <strong>6:00 PM</strong> — Evening peak</span>
-          </div>
-        </div>
       </div>
 
       {/* Groups Tracker */}
