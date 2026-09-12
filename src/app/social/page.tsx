@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Share2, Globe, ThumbsUp, MessageCircle, Repeat2, Users,
   Target, Calendar, MapPin, TrendingUp, Edit3, Check, X,
-  ChevronRight, Eye, Link2, Package, BarChart2,
+  ChevronRight, Eye, Link2, Package, BarChart2, RefreshCw,
+  Wifi, WifiOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,119 @@ interface GroupEntry {
   members: string;
   posted: boolean;
   category: string;
+}
+
+// ── Sync types ────────────────────────────────────────────────────────────────
+interface FBSyncData {
+  connected: boolean;
+  page?: { name: string; followers: number; fans: number };
+  posts?: Array<{ id: string; message: string; createdAt: string; likes: number; comments: number; shares: number }>;
+  insights?: { monthlyReach: number; engagements: number; newFans: number };
+  syncedAt?: string;
+  error?: string;
+}
+
+interface LISyncData {
+  connected: boolean;
+  page?: { followers: number };
+  posts?: Array<{ id: string; message: string; createdAt: string | null; likes: number; comments: number; shares: number; impressions: number }>;
+  insights?: { pageViews: number; uniqueVisitors: number; clicks: number };
+  syncedAt?: string;
+  error?: string;
+}
+
+// ── Sync hook ─────────────────────────────────────────────────────────────────
+function useSocialSync() {
+  const [fbData, setFbData] = useState<FBSyncData | null>(null);
+  const [liData, setLiData] = useState<LISyncData | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+
+  const sync = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const [fb, li] = await Promise.all([
+        fetch("/api/social/facebook").then(r => r.json()),
+        fetch("/api/social/linkedin").then(r => r.json()),
+      ]);
+      setFbData(fb);
+      setLiData(li);
+      setLastSynced(new Date());
+    } catch { /* network error — keep previous data */ }
+    finally { setSyncing(false); }
+  }, []);
+
+  useEffect(() => {
+    sync();
+    const interval = setInterval(sync, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [sync]);
+
+  return { fbData, liData, syncing, lastSynced, sync };
+}
+
+// ── Sync banner ───────────────────────────────────────────────────────────────
+function SyncBanner({ fbData, liData, syncing, lastSynced, onSync }: {
+  fbData: FBSyncData | null;
+  liData: LISyncData | null;
+  syncing: boolean;
+  lastSynced: Date | null;
+  onSync: () => void;
+}) {
+  const fbOk = fbData?.connected;
+  const liOk = liData?.connected;
+  const anyConnected = fbOk || liOk;
+
+  const istTime = lastSynced
+    ? lastSynced.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" })
+    : null;
+
+  if (!anyConnected && fbData !== null) {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <WifiOff className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-amber-800">Manual mode — APIs not connected</p>
+            <p className="text-xs text-amber-600 mt-0.5">
+              Add <code className="bg-amber-100 px-1 rounded">FACEBOOK_PAGE_ACCESS_TOKEN</code> and{" "}
+              <code className="bg-amber-100 px-1 rounded">LINKEDIN_ACCESS_TOKEN</code> to{" "}
+              <code className="bg-amber-100 px-1 rounded">.env.local</code> to enable live sync.
+            </p>
+          </div>
+        </div>
+        <button onClick={onSync} disabled={syncing}
+          className="shrink-0 text-xs text-amber-600 hover:text-amber-800 disabled:opacity-50 flex items-center gap-1">
+          <RefreshCw className={cn("h-3 w-3", syncing && "animate-spin")} /> Retry
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="relative shrink-0">
+          <Wifi className="h-4 w-4 text-emerald-600" />
+          <span className={cn("absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full border border-white",
+            syncing ? "bg-amber-400 animate-pulse" : "bg-emerald-500 animate-pulse")} />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-emerald-800">
+            {[fbOk && "Facebook", liOk && "LinkedIn"].filter(Boolean).join(" + ")} live sync active
+          </p>
+          <p className="text-xs text-emerald-600 mt-0.5">
+            {syncing ? "Syncing…" : istTime ? `Last synced ${istTime} IST · auto-refreshes every 5 min` : "Syncing…"}
+          </p>
+        </div>
+      </div>
+      <button onClick={onSync} disabled={syncing}
+        className="shrink-0 text-xs font-medium text-emerald-700 hover:text-emerald-900 disabled:opacity-50 flex items-center gap-1.5 rounded-lg bg-white border border-emerald-200 px-3 py-1.5 transition-colors">
+        <RefreshCw className={cn("h-3.5 w-3.5", syncing && "animate-spin")} />
+        Sync now
+      </button>
+    </div>
+  );
 }
 
 // ── Default data ──────────────────────────────────────────────────────────────
@@ -241,7 +355,7 @@ function PostRow({ post }: { post: ScheduledPost }) {
 }
 
 // ── Facebook Tab ──────────────────────────────────────────────────────────────
-function FacebookTab() {
+function FacebookTab({ fbData }: { fbData: FBSyncData | null }) {
   const [kpi, setKpi] = useState<KpiData>(DEFAULT_FB_KPI);
   const [groups, setGroups] = useState<GroupEntry[]>(FACEBOOK_GROUPS);
   const [posts, setPosts] = useState<ScheduledPost[]>(SCHEDULED_POSTS.filter(p => p.platform === "facebook"));
@@ -252,6 +366,19 @@ function FacebookTab() {
     setGroups(loadFromStorage("brindari_fb_groups", FACEBOOK_GROUPS));
     setPosts(loadFromStorage("brindari_fb_posts", SCHEDULED_POSTS.filter(p => p.platform === "facebook")));
   }, []);
+
+  // Merge live API data into KPI state when available
+  useEffect(() => {
+    if (!fbData?.connected || !fbData.insights) return;
+    setKpi(prev => ({
+      ...prev,
+      estimatedReach: fbData.insights!.monthlyReach || prev.estimatedReach,
+      likes: fbData.posts?.reduce((s, p) => s + p.likes, 0) ?? prev.likes,
+      comments: fbData.posts?.reduce((s, p) => s + p.comments, 0) ?? prev.comments,
+      shares: fbData.posts?.reduce((s, p) => s + p.shares, 0) ?? prev.shares,
+      postsPublished: fbData.posts?.length ?? prev.postsPublished,
+    }));
+  }, [fbData]);
 
   function updateKpi(key: keyof KpiData, val: number) {
     const next = { ...kpi, [key]: val };
@@ -286,7 +413,12 @@ function FacebookTab() {
             { label: "Post times", value: "9 AM · 1 PM · 6 PM IST" },
             { label: "Target reach/post", value: "3,000–8,000" },
             { label: "Monthly goal", value: "50K reach · 15 leads" },
-            { label: "Group strategy", value: "19 groups · rotating" },
+            {
+              label: fbData?.connected ? "Page followers" : "Group strategy",
+              value: fbData?.connected
+                ? (fbData.page?.followers ?? 0).toLocaleString()
+                : "19 groups · rotating",
+            },
           ].map(s => (
             <div key={s.label} className="rounded-lg bg-white/10 px-3 py-2">
               <p className="text-blue-200 text-[10px] uppercase tracking-wide mb-0.5">{s.label}</p>
@@ -419,17 +551,56 @@ function FacebookTab() {
   );
 }
 
-// ── LinkedIn Tab (placeholder) ────────────────────────────────────────────────
-function LinkedInTab() {
+// ── LinkedIn Tab ─────────────────────────────────────────────────────────────
+function LinkedInTab({ liData }: { liData: LISyncData | null }) {
   return (
     <div className="space-y-6">
       <div className="rounded-xl bg-gradient-to-r from-[#0077B5] to-[#0099D6] px-5 py-4 text-white">
         <div className="flex items-center gap-2 mb-2">
           <BarChart2 className="h-4 w-4 text-blue-200" />
-          <span className="text-sm font-semibold">LinkedIn B2B Strategy — Coming Soon</span>
+          <span className="text-sm font-semibold">
+            {liData?.connected ? "LinkedIn B2B Strategy — Live" : "LinkedIn B2B Strategy — Coming Soon"}
+          </span>
         </div>
-        <p className="text-sm text-blue-100">LinkedIn targeting is planned for Phase 2. The strategy covers decision-maker outreach to procurement heads, import managers, and sourcing directors at nutraceutical companies in Germany, UAE, and UK.</p>
+        {liData?.connected ? (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs mt-1">
+            {[
+              { label: "Followers", value: (liData.page?.followers ?? 0).toLocaleString() },
+              { label: "Page Views (30d)", value: (liData.insights?.pageViews ?? 0).toLocaleString() },
+              { label: "Unique Visitors", value: (liData.insights?.uniqueVisitors ?? 0).toLocaleString() },
+              { label: "Clicks (30d)", value: (liData.insights?.clicks ?? 0).toLocaleString() },
+            ].map(s => (
+              <div key={s.label} className="rounded-lg bg-white/10 px-3 py-2">
+                <p className="text-blue-200 text-[10px] uppercase tracking-wide mb-0.5">{s.label}</p>
+                <p className="font-semibold">{s.value}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-blue-100">LinkedIn targeting is planned for Phase 2. The strategy covers decision-maker outreach to procurement heads, import managers, and sourcing directors at nutraceutical companies in Germany, UAE, and UK.</p>
+        )}
       </div>
+
+      {liData?.connected && liData.posts && liData.posts.length > 0 && (
+        <div className="card p-5">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <BarChart2 className="h-4 w-4 text-[#0077B5]" /> Recent LinkedIn Posts
+          </h2>
+          <div className="space-y-3">
+            {liData.posts.slice(0, 5).map(p => (
+              <div key={p.id} className="rounded-lg bg-gray-50 px-4 py-3">
+                <p className="text-sm text-gray-700 line-clamp-2">{p.message || "(No text)"}</p>
+                <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                  <span className="flex items-center gap-1"><ThumbsUp className="h-3 w-3" />{p.likes}</span>
+                  <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" />{p.comments}</span>
+                  <span className="flex items-center gap-1"><Repeat2 className="h-3 w-3" />{p.shares}</span>
+                  <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{p.impressions.toLocaleString()} impressions</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {[
@@ -466,9 +637,10 @@ type Tab = "facebook" | "linkedin";
 
 export default function SocialMarketingPage() {
   const [tab, setTab] = useState<Tab>("facebook");
+  const { fbData, liData, syncing, lastSynced, sync } = useSocialSync();
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-8 space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -483,6 +655,9 @@ export default function SocialMarketingPage() {
           <span>All times in IST (UTC+5:30)</span>
         </div>
       </div>
+
+      {/* Live sync banner */}
+      <SyncBanner fbData={fbData} liData={liData} syncing={syncing} lastSynced={lastSynced} onSync={sync} />
 
       {/* Tab selector */}
       <div className="flex gap-1 rounded-xl bg-gray-100 p-1 w-fit">
@@ -502,15 +677,18 @@ export default function SocialMarketingPage() {
           >
             <span>{t.emoji}</span>
             {t.label}
-            {t.id === "linkedin" && (
+            {t.id === "linkedin" && !liData?.connected && (
               <span className="rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] font-semibold text-gray-500">Soon</span>
+            )}
+            {t.id === "linkedin" && liData?.connected && (
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             )}
           </button>
         ))}
       </div>
 
       {/* Tab content */}
-      {tab === "facebook" ? <FacebookTab /> : <LinkedInTab />}
+      {tab === "facebook" ? <FacebookTab fbData={fbData} /> : <LinkedInTab liData={liData} />}
     </div>
   );
 }
