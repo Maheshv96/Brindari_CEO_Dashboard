@@ -5,7 +5,7 @@ import {
   Share2, Globe, ThumbsUp, MessageCircle, Repeat2, Users,
   Target, Calendar, MapPin, TrendingUp, Edit3, Check, X,
   ChevronRight, Eye, Link2, Package, BarChart2, RefreshCw,
-  Wifi,
+  Wifi, Sparkles, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -228,6 +228,119 @@ function KpiCard({
   );
 }
 
+
+// ── AI Strategy Panel ─────────────────────────────────────────────────────────
+interface AITip {
+  title: string;
+  action: string;
+  target: string;
+}
+
+function AIStrategyPanel({ platform, kpi }: { platform: "facebook" | "linkedin"; kpi: KpiData | Record<string, number> }) {
+  const [tips, setTips] = useState<AITip[]>(() => {
+    try {
+      const saved = localStorage.getItem(`brindari_ai_tips_${platform}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [generatedAt, setGeneratedAt] = useState<string | null>(() => {
+    try { return localStorage.getItem(`brindari_ai_tips_ts_${platform}`); } catch { return null; }
+  });
+
+  async function generate() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/social/ai-strategy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ platform, kpi }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setTips(data.tips);
+      setGeneratedAt(data.generatedAt);
+      try {
+        localStorage.setItem(`brindari_ai_tips_${platform}`, JSON.stringify(data.tips));
+        localStorage.setItem(`brindari_ai_tips_ts_${platform}`, data.generatedAt);
+      } catch { /* storage full */ }
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const timeStr = generatedAt
+    ? new Date(generatedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })
+    : null;
+
+  const accentColors = [
+    "border-l-violet-400 bg-violet-50",
+    "border-l-emerald-400 bg-emerald-50",
+    "border-l-blue-400 bg-blue-50",
+    "border-l-amber-400 bg-amber-50",
+  ];
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100">
+            <Sparkles className="h-4 w-4 text-violet-600" />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-900">AI Growth Strategy</h2>
+            {timeStr && <p className="text-[10px] text-gray-400">Generated {timeStr} IST</p>}
+          </div>
+        </div>
+        <button
+          onClick={generate}
+          disabled={loading}
+          className="flex items-center gap-1.5 rounded-full bg-violet-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-violet-700 disabled:opacity-60 transition-colors"
+        >
+          {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+          {loading ? "Generating…" : tips.length ? "Regenerate" : "Generate Strategy"}
+        </button>
+      </div>
+
+      {error && (
+        <p className="text-xs text-red-500 mb-3">{error}</p>
+      )}
+
+      {tips.length === 0 && !loading && (
+        <div className="rounded-xl border border-dashed border-gray-200 py-10 text-center">
+          <Sparkles className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+          <p className="text-sm text-gray-400">Click &quot;Generate Strategy&quot; to get AI-powered recommendations</p>
+          <p className="text-xs text-gray-300 mt-1">Based on your current KPIs — powered by Llama 3.3 via Groq</p>
+        </div>
+      )}
+
+      {loading && (
+        <div className="rounded-xl border border-dashed border-violet-100 py-10 text-center">
+          <Loader2 className="h-8 w-8 text-violet-300 mx-auto mb-2 animate-spin" />
+          <p className="text-sm text-violet-400">Analysing your KPIs and generating strategy…</p>
+        </div>
+      )}
+
+      {tips.length > 0 && !loading && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {tips.map((tip, i) => (
+            <div key={i} className={cn("rounded-xl border-l-4 p-4", accentColors[i % accentColors.length])}>
+              <p className="text-sm font-semibold text-gray-900 mb-1">{tip.title}</p>
+              <p className="text-xs text-gray-600 leading-relaxed">{tip.action}</p>
+              <p className="mt-2 text-[11px] font-medium text-gray-500 flex items-center gap-1">
+                <Target className="h-3 w-3 shrink-0" /> {tip.target}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Facebook Tab ──────────────────────────────────────────────────────────────
 function FacebookTab({ fbData }: { fbData: FBSyncData | null }) {
@@ -458,6 +571,9 @@ function FacebookTab({ fbData }: { fbData: FBSyncData | null }) {
           <p className="text-xs text-amber-700"><strong>⚠️ Group Rotation:</strong> Never post the same content to more than 3–4 groups per day. Vary captions slightly to avoid Facebook spam detection.</p>
         </div>
       </div>
+
+      {/* AI Strategy */}
+      <AIStrategyPanel platform="facebook" kpi={kpi} />
     </div>
   );
 }
@@ -539,6 +655,18 @@ function LinkedInTab({ liData }: { liData: LISyncData | null }) {
         <p className="text-sm font-medium text-gray-400">LinkedIn tracking will activate once the company page is set up.</p>
         <p className="text-xs text-gray-300 mt-1">KPIs will appear here: connections, impressions, profile views, InMail replies, and leads generated.</p>
       </div>
+
+      {/* AI Strategy */}
+      <AIStrategyPanel
+        platform="linkedin"
+        kpi={{
+          followers: liData?.page?.followers ?? 0,
+          pageViews: liData?.insights?.pageViews ?? 0,
+          uniqueVisitors: liData?.insights?.uniqueVisitors ?? 0,
+          clicks: liData?.insights?.clicks ?? 0,
+          recentPosts: liData?.posts?.length ?? 0,
+        }}
+      />
     </div>
   );
 }
