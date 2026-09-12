@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   Users, ShoppingCart, DollarSign, FileText, Ship,
   Calculator, Mail, ArrowRight, TrendingUp,
-  AlertTriangle, Clock, Flame,
+  AlertTriangle, Clock, Flame, RefreshCw,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { formatUSD, STATUS_COLORS, cn } from "@/lib/utils";
@@ -165,6 +165,8 @@ export default function OverviewPage() {
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading,  setLoading]  = useState(true);
+  const [syncing,  setSyncing]  = useState(false);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
 
   const greeting = computeGreeting(now.getHours());
 
@@ -178,25 +180,29 @@ export default function OverviewPage() {
     return () => clearInterval(id);
   }, []);
 
+  async function fetchAll(manual = false) {
+    if (manual) setSyncing(true);
+    const [
+      { data: leadsData },
+      { data: ordersData },
+      { data: allOrdersData },
+      { data: invoicesData },
+    ] = await Promise.all([
+      supabase.from("leads").select("*").order("created_at", { ascending: false }),
+      supabase.from("orders").select("*, buyers(company)").order("created_at", { ascending: false }).limit(5),
+      supabase.from("orders").select("*").order("created_at", { ascending: false }),
+      supabase.from("invoices").select("*").order("created_at", { ascending: false }),
+    ]);
+    setLeads((leadsData ?? []) as Lead[]);
+    setOrders((ordersData ?? []) as RecentOrder[]);
+    setAllOrders((allOrdersData ?? []) as Order[]);
+    setInvoices((invoicesData ?? []) as Invoice[]);
+    setLoading(false);
+    setSyncing(false);
+    setLastSynced(new Date());
+  }
+
   useEffect(() => {
-    async function fetchAll() {
-      const [
-        { data: leadsData },
-        { data: ordersData },
-        { data: allOrdersData },
-        { data: invoicesData },
-      ] = await Promise.all([
-        supabase.from("leads").select("*").order("created_at", { ascending: false }),
-        supabase.from("orders").select("*, buyers(company)").order("created_at", { ascending: false }).limit(5),
-        supabase.from("orders").select("*").order("created_at", { ascending: false }),
-        supabase.from("invoices").select("*").order("created_at", { ascending: false }),
-      ]);
-      setLeads((leadsData ?? []) as Lead[]);
-      setOrders((ordersData ?? []) as RecentOrder[]);
-      setAllOrders((allOrdersData ?? []) as Order[]);
-      setInvoices((invoicesData ?? []) as Invoice[]);
-      setLoading(false);
-    }
     fetchAll();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -276,6 +282,21 @@ export default function OverviewPage() {
               <Clock className="h-3.5 w-3.5" /> {kpi.staleLeads} lead{kpi.staleLeads > 1 ? "s" : ""} need follow-up
             </span>
           )}
+          <div className="flex flex-col items-end gap-0.5">
+            <button
+              onClick={() => fetchAll(true)}
+              disabled={syncing}
+              className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 disabled:opacity-60 transition-colors"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "Syncing…" : "Sync Now"}
+            </button>
+            {lastSynced && (
+              <span className="text-[10px] text-gray-400">
+                Last synced {lastSynced.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" })} IST
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
