@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run -s agent:tracker:*)",
+      "Bash(npm run -s agent:read:*)"
+    ],
+    "deny": [
+      "Read(./.env.local)",
+      "Read(./.env)",
+      "Read(../../../.env.local)"
+    ]
+  }
+}

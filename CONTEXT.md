@@ -15,8 +15,11 @@
 |---|---|
 | Company | Brindari Global |
 | Product | Organic Moringa Powder, dried leaves, seed oil, tea |
-| Origin | **Maharashtra, India** (not Tamil Nadu / Andhra Pradesh) |
-| Certifications | HACCP · FSSAI · APEDA · NABL |
+| Office | Maharashtra, India |
+| Sourcing | Across India, mainly Tamil Nadu, Andhra Pradesh, Karnataka (decision A8, 2026-11-10). Never say the moringa is grown or sourced in Maharashtra. |
+| HS code | 12119029 |
+| Customers | None yet. Lists of "buyers" are prospects. |
+| Certifications | **Unverified.** Do not state any as held until confirmed (see `docs/agents/OPEN_ITEMS.md`, section B). |
 | Email | sales@brindari.com |
 | Phone | +91 7020400283 / 9404772826 |
 | Website | www.brindari.com |
@@ -52,9 +55,9 @@
 
 ### Exports
 - `BRAND` — company name, email, phone, colors
-- `ORIGIN_PARA` — Maharashtra origin paragraph
+- `ORIGIN_PARA` — office (Maharashtra) and sourcing (pan-India, mainly TN/AP/KA) paragraph
 - `CERT_DESCRIPTIONS` — cert name → description mapping
-- `MARKET_PRICING` — country → { fob, moq, port }
+- `MARKET_PRICING` — country → { fob, moq, port }. UNVERIFIED reference only; bulk campaigns no longer insert these prices automatically
 - `EmailDetails` interface — all fields
 - `buildEmailHtml(introText, details, logoSrc?)` — main HTML builder
 - `buildEmailText(introText, details)` — plain text fallback
@@ -113,7 +116,7 @@ In `bulk-campaign/route.ts`, `SEQUENCE_CONTEXT` maps step → AI prompt + subjec
 | 4 | Direct ask — one question | false |
 | 5 | Retention / reorder | false |
 
-Subject line strategy: each stage has a template (e.g. Cold → `"Premium Organic Moringa from India — FOB $X/kg"`).
+Subject line strategy: each stage has a template (e.g. Cold → `"Organic Moringa from India — FOB $X/kg"`).
 
 ---
 
@@ -131,6 +134,8 @@ container_loading, port, show_docs
 ### Certifications shown in UI
 `HACCP · FSSAI · APEDA · NABL · Organic · ISO 22000 · Halal · Kosher · Non-GMO`
 
+These are options only. Tick a certification only once it is verified. With none ticked, emails say "Certification details available on request".
+
 ### Multi-country generation
 If multiple countries selected, generates one email per country and shows them as tabs.
 
@@ -143,9 +148,9 @@ Collapsible section (▶ toggle) with 7 fields: Packaging, Lead Time, Payment Te
 
 1. ✅ Fixed broken logo (catbox.moe was dead)
 2. ✅ Logo now embedded as inline PNG from website SVG (`sharp` conversion)
-3. ✅ Maharashtra origin story updated
-4. ✅ Certifications as bullet list with descriptions (HACCP, FSSAI, APEDA, NABL)
-5. ✅ Documentation section (COA, Phytosanitary, Origin, HACCP/FSSAI, Packing List)
+3. ✅ Origin paragraph corrected to office in Maharashtra, sourcing across India (2026-11-10)
+4. ✅ Certifications as bullet list with descriptions (only those ticked in the form)
+5. ✅ Documentation section (COA, Phytosanitary, Origin, Food Safety Certificates as applicable, Packing List)
 6. ✅ Full `EmailDetails` with packaging, lead time, HS code, payment terms, etc.
 7. ✅ Market-specific pricing table
 8. ✅ 5 buyer stage variations with different content per stage
