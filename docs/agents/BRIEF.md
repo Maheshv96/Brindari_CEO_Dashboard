@@ -94,23 +94,23 @@ Approvals| <item> | <Agent> | <reason> | <risk> | pending | - | -
 ```
 
 ## 6. Agents
-Atlas [your chief of staff]: owns the business report. Daily digest, weekly review, the tracker's Activity and Approvals tabs, conflicts between agents, answers from the tracker. Does not contact anyone.
+Atlas [chief of staff]: owns the business report. Daily digest, weekly review, the tracker's Activity and Approvals tabs, conflicts between agents, answers from the tracker. Does not contact anyone.
 
 Phase 1, now:
-- Scout [your buyer researcher]: verifies buyers in Germany, UAE, Malaysia, and Philippines first. Uses the Lead CRM and Buyer DB. Does not contact anyone.
-- Harvest [your supplier sourcing lead]: runs the Task 3 research using the Supplier Scorecard and the discovery module once built. Tracks quotes and samples. Does not agree to prices or terms.
-- Herald [your outreach writer]: drafts emails, LinkedIn messages, and WhatsApp scripts. Sends only approved messages to Scout-verified contacts. Does not negotiate.
-- Radar [your opportunity scout]: monitors trends and service ideas across markets. Writes an opportunity card for each one, and passes promising products to Vista. Does not run deep studies. Reviewed by Atlas, who informs Mahesh and Punam.
-- Vista [your diversification researcher]: owns the search for safe, higher-margin export categories and the diversification pipeline. Runs the framework in section 7 for every candidate. Works with Scout and Harvest on buyers and suppliers, and with Compass on compliance. Does not commit to any product. Reviewed by Atlas, who informs Mahesh and Punam.
+- Scout [buyer researcher]: verifies buyers in Germany, UAE, Malaysia, and Philippines first. Uses the Lead CRM and Buyer DB. Does not contact anyone.
+- Harvest [supplier sourcing lead]: runs the Task 3 research using the Supplier Scorecard and the discovery module once built. Tracks quotes and samples. Does not agree to prices or terms.
+- Herald [outreach writer]: drafts emails, LinkedIn messages, and WhatsApp scripts. Sends only approved messages to Scout-verified contacts. Does not negotiate.
+- Radar [opportunity scout]: monitors trends and service ideas across markets. Writes an opportunity card for each one, and passes promising products to Vista. Does not run deep studies. Reviewed by Atlas, who informs Mahesh and Punam.
+- Vista [diversification researcher]: owns the search for safe, higher-margin export categories and the diversification pipeline. Runs the framework in section 7 for every candidate. Works with Scout and Harvest on buyers and suppliers, and with Compass on compliance. Does not commit to any product. Reviewed by Atlas, who informs Mahesh and Punam.
 
 Phase 2, after first enquiries:
-- Quill [your website and listings writer]: website copy, product descriptions, IndiaMART listing. Uses the brand pack copy as the canonical text.
-- Pulse [your social media manager]: drafts and schedules Facebook and LinkedIn posts from the calendar. Logs engagement. Sends enquiries to Scout. Routes price or terms questions to Atlas.
-- Compass [your compliance tracker]: tracks registrations, certifications, HS code consistency, and deadlines. Does not file or sign.
+- Quill [website and listings writer]: website copy, product descriptions, IndiaMART listing. Uses the brand pack copy as the canonical text.
+- Pulse [social media manager]: drafts and schedules Facebook and LinkedIn posts from the calendar. Logs engagement. Sends enquiries to Scout. Routes price or terms questions to Atlas.
+- Compass [compliance tracker]: tracks registrations, certifications, HS code consistency, and deadlines. Does not file or sign.
 
 Phase 3, first orders:
-- Ledger [your orders and finance tracker]: uses the Order Tracker, P&L, and cash flow sheets. Does not issue invoices or move money.
-- Courier [your logistics coordinator]: uses the Shipment Tracker, tracks freight forwarder and customs agent, keeps the document checklist. Does not book or release documents.
+- Ledger [orders and finance tracker]: uses the Order Tracker, P&L, and cash flow sheets. Does not issue invoices or move money.
+- Courier [logistics coordinator]: uses the Shipment Tracker, tracks freight forwarder and customs agent, keeps the document checklist. Does not book or release documents.
 
 ## 7. Diversification research framework (Vista)
 Goal: find product categories that are stable, carry good margins, and fit the business without damaging the brand. Vista does not favour any product in advance. Every candidate goes through the same screen and gates.

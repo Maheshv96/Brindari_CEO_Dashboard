@@ -14,17 +14,17 @@ type Diversification = { id: string; created_at: string; product: string; stage:
 type Compliance = { id: string; created_at: string; item: string; type: string; status: string; owner: string; next_action: string | null };
 
 const AGENTS: { key: string; name: string; role: string; schedule: string }[] = [
-  { key: "atlas",   name: "Atlas",   role: "your chief of staff",              schedule: "Daily 7 PM · weekly Sat" },
-  { key: "scout",   name: "Scout",   role: "your buyer researcher",            schedule: "Mon–Sat 9 AM" },
-  { key: "harvest", name: "Harvest", role: "your supplier sourcing lead",      schedule: "Mon–Sat 10 AM" },
-  { key: "compass", name: "Compass", role: "your compliance tracker",          schedule: "Mon–Sat 11 AM*" },
-  { key: "herald",  name: "Herald",  role: "your outreach writer",             schedule: "Mon–Sat 12 PM" },
-  { key: "vista",   name: "Vista",   role: "your diversification researcher",  schedule: "Mon, Thu 2 PM" },
-  { key: "radar",   name: "Radar",   role: "your opportunity scout",           schedule: "Tue, Fri 3 PM" },
-  { key: "quill",   name: "Quill",   role: "your website and listings writer", schedule: "On request" },
-  { key: "pulse",   name: "Pulse",   role: "your social media manager",        schedule: "On request" },
-  { key: "ledger",  name: "Ledger",  role: "your orders and finance tracker",  schedule: "After first orders" },
-  { key: "courier", name: "Courier", role: "your logistics coordinator",       schedule: "After first orders" },
+  { key: "atlas",   name: "Atlas",   role: "chief of staff",              schedule: "Daily 7 PM · weekly Sat" },
+  { key: "scout",   name: "Scout",   role: "buyer researcher",            schedule: "Mon–Sat 9 AM" },
+  { key: "harvest", name: "Harvest", role: "supplier sourcing lead",      schedule: "Mon–Sat 10 AM" },
+  { key: "compass", name: "Compass", role: "compliance tracker",          schedule: "Mon–Sat 11 AM*" },
+  { key: "herald",  name: "Herald",  role: "outreach writer",             schedule: "Mon–Sat 12 PM" },
+  { key: "vista",   name: "Vista",   role: "diversification researcher",  schedule: "Mon, Thu 2 PM" },
+  { key: "radar",   name: "Radar",   role: "opportunity scout",           schedule: "Tue, Fri 3 PM" },
+  { key: "quill",   name: "Quill",   role: "website and listings writer", schedule: "On request" },
+  { key: "pulse",   name: "Pulse",   role: "social media manager",        schedule: "On request" },
+  { key: "ledger",  name: "Ledger",  role: "orders and finance tracker",  schedule: "After first orders" },
+  { key: "courier", name: "Courier", role: "logistics coordinator",       schedule: "After first orders" },
 ];
 
 const fmt = (iso: string) =>
@@ -127,7 +127,7 @@ export default function AgentsPage() {
       {/* Atlas report */}
       <section className="card p-5 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold text-gray-900">Atlas [your chief of staff]: latest update</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Atlas [chief of staff]: latest update</h2>
           {reports.length > 1 && (
             <select className="input max-w-xs" value={reportIdx} onChange={e => setReportIdx(Number(e.target.value))}>
               {reports.map((r, i) => <option key={r.id} value={i}>{r.kind === "weekly-review" ? "Weekly review" : "Daily update"} · {fmt(r.created_at)}</option>)}

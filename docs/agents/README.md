@@ -12,17 +12,17 @@ Eleven Claude Code subagents, defined in `.claude/agents/`, all working from one
 
 | Phase | Agent (call it by the name in `code`) | Does | Never |
 |---|---|---|---|
-| All | **Atlas [your chief of staff]** (`atlas`) | Digests, weekly review, approvals triage, conflicts | Contacts anyone |
-| 1 | **Scout [your buyer researcher]** (`scout`) | Finds and verifies buyers | Contacts anyone |
-| 1 | **Harvest [your supplier sourcing lead]** (`harvest`) | Supplier research, scorecard, quotes, samples | Agrees prices or terms |
-| 1 | **Herald [your outreach writer]** (`herald`) | Drafts outreach for founder approval | Sends, negotiates |
-| 1 | **Radar [your opportunity scout]** (`radar`) | Opportunity cards; passes products to Vista | Deep studies |
-| 1 | **Vista [your diversification researcher]** (`vista`) | Stability screen and Gates 0–6 for new products | Commits to a product |
-| 2 | **Quill [your website and listings writer]** (`quill`) | Website, product and IndiaMART copy | Edits the site |
-| 2 | **Pulse [your social media manager]** (`pulse`) | Facebook and LinkedIn post drafts, KPI logging | Posts |
-| 0/2 | **Compass [your compliance tracker]** (`compass`) | Registrations, certifications, HS code, duties | Files or signs |
-| 3 | **Ledger [your orders and finance tracker]** (`ledger`) | Orders, P&L, cash, FOB maths | Invoices, moves money |
-| 3 | **Courier [your logistics coordinator]** (`courier`) | Shipments and document checklist | Books or releases documents |
+| All | **Atlas [chief of staff]** (`atlas`) | Digests, weekly review, approvals triage, conflicts | Contacts anyone |
+| 1 | **Scout [buyer researcher]** (`scout`) | Finds and verifies buyers | Contacts anyone |
+| 1 | **Harvest [supplier sourcing lead]** (`harvest`) | Supplier research, scorecard, quotes, samples | Agrees prices or terms |
+| 1 | **Herald [outreach writer]** (`herald`) | Drafts outreach for founder approval | Sends, negotiates |
+| 1 | **Radar [opportunity scout]** (`radar`) | Opportunity cards; passes products to Vista | Deep studies |
+| 1 | **Vista [diversification researcher]** (`vista`) | Stability screen and Gates 0–6 for new products | Commits to a product |
+| 2 | **Quill [website and listings writer]** (`quill`) | Website, product and IndiaMART copy | Edits the site |
+| 2 | **Pulse [social media manager]** (`pulse`) | Facebook and LinkedIn post drafts, KPI logging | Posts |
+| 0/2 | **Compass [compliance tracker]** (`compass`) | Registrations, certifications, HS code, duties | Files or signs |
+| 3 | **Ledger [orders and finance tracker]** (`ledger`) | Orders, P&L, cash, FOB maths | Invoices, moves money |
+| 3 | **Courier [logistics coordinator]** (`courier`) | Shipments and document checklist | Books or releases documents |
 
 No agent has a tool that can send email, post, pay or file. Agents log to the shared tracker (BRIEF §5) with `agent:tracker`, and the read-capable agents (atlas, scout, harvest, vista, compass, ledger, courier) can read dashboard data with `agent:read`. Those two commands are the only shell commands agents may run; both are pre-approved in `.claude/settings.json`. New agent files load in a **new** Claude Code session.
 
@@ -48,14 +48,14 @@ Shown in the Claude desktop app sidebar under **Scheduled** (with run history an
 
 | Time (IST) | Agent | Days | Each run |
 |---|---|---|---|
-| 9:00 AM | Scout [your buyer researcher] | Mon–Sat | Verify 5 prospects; add VERIFIED ones to dashboard Leads |
-| 10:00 AM | Harvest [your supplier sourcing lead] | Mon–Sat | Review and score 4 suppliers |
-| 11:00 AM | Compass [your compliance tracker] | Mon–Sat until 24 Nov 2026, then Mon & Thu | 1–2 compliance checks |
-| 12:00 PM | Herald [your outreach writer] | Mon–Sat | Draft emails for up to 5 verified prospects, into Approvals (never sends) |
-| 2:00 PM | Vista [your diversification researcher] | Mon & Thu | One research step |
-| 3:00 PM | Radar [your opportunity scout] | Tue & Fri | Market and policy scan |
-| 7:00 PM | Atlas [your chief of staff] | Mon–Fri | Daily update: today by agent, what needs you, tomorrow's top 3 |
-| 7:00 PM | Atlas [your chief of staff] | Sat | Weekly review (replaces that day's update) |
+| 9:00 AM | Scout [buyer researcher] | Mon–Sat | Verify 5 prospects; add VERIFIED ones to dashboard Leads |
+| 10:00 AM | Harvest [supplier sourcing lead] | Mon–Sat | Review and score 4 suppliers |
+| 11:00 AM | Compass [compliance tracker] | Mon–Sat until 24 Nov 2026, then Mon & Thu | 1–2 compliance checks |
+| 12:00 PM | Herald [outreach writer] | Mon–Sat | Draft emails for up to 5 verified prospects, into Approvals (never sends) |
+| 2:00 PM | Vista [diversification researcher] | Mon & Thu | One research step |
+| 3:00 PM | Radar [opportunity scout] | Tue & Fri | Market and policy scan |
+| 7:00 PM | Atlas [chief of staff] | Mon–Fri | Daily update: today by agent, what needs you, tomorrow's top 3 |
+| 7:00 PM | Atlas [chief of staff] | Sat | Weekly review (replaces that day's update) |
 
 **Limit:** these are local scheduled tasks. They run only while this Mac is on, awake and the Claude app is open; a missed run happens on next launch. See OPEN_ITEMS A18 for the always-on (cloud) plan.
 
