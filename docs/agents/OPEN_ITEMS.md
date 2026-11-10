@@ -27,8 +27,10 @@ Last updated: 2026-11-10.
 | # | Item | Status | Who |
 |---|---|---|---|
 | A11 | LinkedIn setup (scheduled 15 Sep 2026) | A web search on 2026-11-10 found no public Brindari Global LinkedIn page. Someone signed in to LinkedIn needs to check for a company page and the founders' profiles. | Mahesh or Punam |
-| A12a | Missing tracker tabs | The toolkit has no Activity log, Tasks, Approvals, Decisions, Diversification pipeline, Compliance or Marketing KPIs tabs. They need adding to the same workbook. | Mahesh, or Claude on request |
-| A13 | Supplier discovery on Vercel | The module launches a full browser inside one API request. That is expected to fail on Vercel, so it probably works only when the dashboard runs locally. Not tested yet. | To test locally |
+| A12a | Tracker tabs | **Done 2026-11-10**: tabs 12–18 added; A1–A12 logged in 15 Decisions. Sample rows in sheets 03–11 still to clear (task in 13 Tasks). | Mahesh |
+| A13 | Supplier discovery on Vercel | **Checked 2026-11-10** from the job log: works locally, fails on Vercel (no browser). Run it locally, or move scraping off Vercel later. 16 suppliers await Harvest review. | Harvest / Mahesh |
+| A14 | Agent shell access | Agents need permission to run the two commands `agent:tracker` and `agent:read`. Not yet granted: the auto-mode safety check stopped it pending your decision. Until then, agents print "Tracker rows" and the main session runs the commands. | Mahesh |
+| A15 | Read-only database user | `agent:read` uses the dashboard's service-role key and enforces read-only in code (GET only, fixed tables). For database-level read-only, create a read-only key (SQL in README) and set `AGENT_SUPABASE_KEY`. | Mahesh |
 
 ## B. Facts to verify (Compass)
 
@@ -50,4 +52,12 @@ No code has been changed yet. These are now **confirmed wrong** against the A-de
 | C6 | `src/app/api/email-agent/generate` prompt | Check its wording against A9 ("new exporter building its network" is fine; any "our buyers / clients" wording is not). | 8 |
 | C7 | `CONTEXT.md` vs brief §3 | Website described as a static Hostinger site vs Next.js/Supabase/Vercel. A local copy exists at `/Users/mahesh/Documents/Claude/Projects/Brindari.com/website`. | Audit needed |
 
-**Next development step:** one surgical PR to the email module and `CONTEXT.md` fixing C1, C2, C5 and C6 now. For C3 and C4, either remove the unverified certifications and prices or put them behind an explicit founder-approved list, since they wait on Compass (section B) and a pricing decision.
+**Fixed 2026-11-10** (email module and `CONTEXT.md`, branch `claude/brindari-agent-system-2774e4`):
+- C1: origin paragraph now says the office is in Maharashtra and the moringa comes from across India, mainly TN, AP and KA. The traceability claim is removed. Both AI prompts now forbid saying the moringa is grown in Maharashtra.
+- C2: `CONTEXT.md` corrected (sourcing, HS code, no customers yet, certifications unverified).
+- C3: when no certification is ticked, emails now say "Certification details available on request" instead of naming HACCP, FSSAI, APEDA and NABL. "HACCP / FSSAI Certificates" in the documents list is now "Food Safety Certificates (as applicable)". The certification picker in `/emails` is unchanged: tick only verified certifications.
+- C4: bulk campaigns no longer fill in FOB price and MOQ from `MARKET_PRICING`. A price appears only when typed into the form. The table stays as an unverified reference.
+- C5: "Premium" removed from the stage 1 subject line.
+- C6: both prompts now forbid implying existing customers.
+
+Still open: C7 (website audit), and certifications and prices waiting on Compass and a founder pricing decision.

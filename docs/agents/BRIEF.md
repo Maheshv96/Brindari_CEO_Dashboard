@@ -7,7 +7,13 @@
 
 `TRACKER_PATH: /Users/mahesh/Documents/Claude/Projects/Brindari.com/03_Brindari_Operations_Toolkit.xlsx`
 
-Decided 2026-11-10 (A12). The workbook today holds: 01 Read Me, 02 Dashboard, 03 Lead CRM, 04 Buyer Database, 05 Supplier Scorecard, 06 Order Tracker, 07 Shipment Tracker, 08 FOB Pricing, 09 Inventory, 10 P&L Model, 11 Cash Flow. The section 5 tabs **Activity log, Tasks, Approvals, Decisions, Diversification pipeline, Compliance and Marketing KPIs do not exist yet** and must be added to this same workbook (no new file).
+Decided 2026-11-10 (A12). The workbook today holds: 01 Read Me, 02 Dashboard, 03 Lead CRM, 04 Buyer Database, 05 Supplier Scorecard, 06 Order Tracker, 07 Shipment Tracker, 08 FOB Pricing, 09 Inventory, 10 P&L Model, 11 Cash Flow. Tabs **12 Activity Log, 13 Tasks, 14 Approvals, 15 Decisions, 16 Diversification, 17 Compliance, 18 Marketing KPIs** were added on 2026-11-10 (section 5 tabs 1–4, 7, 9, 10). Tabs 5, 6, 8 and 11 of section 5 map to the existing sheets 03, 04/05, 06/07 and 11.
+
+**Sheets 03–11 still contain the template's sample rows** (e.g. "Living Foods Co", "TerraVita Italia", 555 phone numbers, April–May 2026 dates). Treat them as SAMPLE, not real data, until a Decisions row records they were cleared.
+
+Tools (see [README](README.md#tools)):
+- `npm run -s agent:tracker -- …` reads and appends tracker rows. Append only, refuses while the workbook is open, backs up before every write.
+- `npm run -s agent:read -- <table> …` reads dashboard data from Supabase. GET only, fixed table list.
 
 Other source files:
 - Master: `/Users/mahesh/Downloads/Brindari_Master_v5.xlsx` (India Suppliers, Supplier Questions, Outreach Scripts, 7-Day Action Plan, Global Buyers, Buyer Outreach Scripts)
@@ -15,7 +21,7 @@ Other source files:
 - Launch packs (PDF): `/Users/mahesh/Documents/Claude/Projects/Brindari.com/01_…`, `02_Brindari_Brand_and_Website_Copy.pdf`, `04_Brindari_Sales_and_Outreach_Kit.pdf`
 - Research: `/Users/mahesh/Desktop/Brindari Global Research/` (market research report, buyer/supplier contacts, ActionPack, TradeMap analysis)
 
-Agents read these files. Until the missing tabs exist, agents end every run with a "Tracker rows" block (see section 5 format) for a person to paste in. Agents never write to the workbook directly while it may be open in a spreadsheet app.
+Agents read these files. Agents that cannot run the tracker command, or find the workbook open, end their run with a "Tracker rows" block (see section 5 format) for a person to paste in. Nothing writes to the workbook while it is open in a spreadsheet app.
 
 ## 1. Company and objective
 Brindari Global (brand: Brindari, brindari.com) is a B2B export business based in Maharashtra, India. Slogan: "Pure. Organic. Global."
@@ -51,7 +57,7 @@ Positioning: describe Brindari accurately, as a company that sources and exports
 - CEO dashboard: brindari-ceo-dashboard.vercel.app. Repo: Brindari_CEO_Dashboard, branch chore/prod-config-updates.
   - Social Marketing (/social): **removed from `main` on 13 Sep 2026** (commit b680965). It had Facebook KPI cards, a 19-group tracker and a post calendar. Marketing KPIs now live in the tracker only.
   - Email outreach module: in progress. Known issues: company name, email signature, and country-specific opening paragraphs. Founder reviews every draft before sending. Fixes have previously broken working elements, so changes must be surgical.
-  - Supplier discovery module (checked 2026-11-10): **already built in TypeScript** in the dashboard: `src/lib/supplier-scraper.ts`, page `/suppliers/discover`, API `api/suppliers/discover*`, Supabase tables from migration `20260519000001`. Sources: IndiaMART export portal, APEDA, Google Maps, company websites (no TradeIndia). Scores 0–100 and has approve/reject review. It launches a full Playwright browser inside one API request, so it is expected to run only on a local machine, not on Vercel. The earlier Python 3.11 plan is **not to be built**; improve this module instead. The module finds candidates only: Harvest (suppliers) and Scout (buyers) decide what is high-rated and trustworthy, using the verification standards in their agent files.
+  - Supplier discovery module (checked 2026-11-10): **already built in TypeScript** in the dashboard: `src/lib/supplier-scraper.ts`, page `/suppliers/discover`, API `api/suppliers/discover*`, Supabase tables from migration `20260519000001`. Sources: IndiaMART export portal, APEDA, Google Maps, company websites (no TradeIndia). Scores 0–100 and has approve/reject review. It launches a full Playwright browser inside one API request: it **works locally** (15 runs in May 2026, 16 suppliers saved, all still status `new`) and **fails on Vercel** (12 Sep 2026: "browserType.launch: Executable doesn't exist"). Its 0–100 score mostly rewards contact completeness, so a high score is not a trust rating. The earlier Python 3.11 plan is **not to be built**; improve this module instead. The module finds candidates only: Harvest (suppliers) and Scout (buyers) decide what is high-rated and trustworthy, using the verification standards in their agent files.
   - Command Center: eight phases covering foundation, product research, supplier sourcing, branding, AI agents, dashboard tech stack, sales, and scaling. Includes an automate-vs-manual framework.
 - Excel toolkit: Brindari_Master_v5 (suppliers, certifications, buyers, priority matrix, reference guide, outreach scripts), Brindari_Marketing_Research_v3, Brindari_SocialMedia_Execution_v1 (30-day calendar, 15 LinkedIn posts, 6 Facebook group posts, group checklist, DM scripts), and the operations toolkit (Dashboard, Lead CRM, Buyer DB, Supplier Scorecard, Order and Shipment Trackers, FOB Calculator, Inventory, P&L, 13-week cash flow).
 - Launch documents (PDF): business setup pack, brand and website copy pack, sales and outreach kit.
