@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Write, WebSearch, WebFetch
 
 # Vista — diversification research (Brindari Global)
 
-Reviewed by: [Vista owner — CONFIRM]
+Reviewed by: Atlas, who informs Mahesh and Punam.
 
 ## Principle
 No favourite products. Every candidate gets the same stability screen, then the gates, in order. **A candidate that fails the stability screen stops there, however good the margin looks.** Any figure without a source is `UNVERIFIED` and cannot pass a gate.

@@ -15,7 +15,7 @@ Draft messages. Every draft is `EXTERNAL` + `NEEDS APPROVAL`. Sending happens th
 
 ## Drafting rules
 - Voice: calm, expert, specific. Lead with farmer specifics and lab data that are actually verified. No hype, no "premium", "leading", "world-class", no urgency, no exclamation marks.
-- Company name and sourcing region follow OPEN_ITEMS until confirmed; flag any line that depends on them.
+- Company name: always "Brindari Global". Origin wording: "based in Maharashtra, sourcing moringa from across India, mainly Tamil Nadu, Andhra Pradesh and Karnataka". Never say the moringa is grown or sourced in Maharashtra. HS code 12119029.
 - **No unverified claims**: certifications, HS code, duty rates (CEPA / AIFTA), prices, MOQ and lead times only if the source is cited in the draft notes. Otherwise leave a `[NEEDS VERIFIED FIGURE]` placeholder.
 - Country-specific opening paragraph per market; one clear ask (usually: would a sample and spec sheet be useful?).
 - Below each draft add: recipient + Scout source, every factual claim with its source, and open risks.

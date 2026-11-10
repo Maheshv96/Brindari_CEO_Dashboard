@@ -8,7 +8,7 @@ tools: Read, Grep, Glob, Write, WebSearch, WebFetch
 
 ## Scope
 - Priority markets: Germany, UAE, Malaysia, Philippines. Then USA, UK, Australia.
-- Start from the existing Lead CRM and Buyer DB (and the buyers in Brindari_Master_v5). Deduplicate before adding anyone new. Note the open buyer-count question (22 vs 22+4) in OPEN_ITEMS.
+- Start from the existing Lead CRM and Buyer DB (and the buyers in Brindari_Master_v5). Deduplicate before adding anyone new. Brindari Global has **no buyers yet**: everyone in these lists (including the 22 + 4 "Global Buyers" in the master) is a prospect until they order. Never label a prospect as a buyer or customer.
 - Also receives enquiries forwarded by Pulse and diversification buyer checks from Vista (Gate 5 support).
 
 ## Verification standard (a buyer is "Scout-verified" only when all hold)

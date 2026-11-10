@@ -5,9 +5,17 @@
 
 ## 0. Tracker location
 
-`TRACKER_PATH: [CONFIRM — path or URL of the operations-toolkit tracker workbook]`
+`TRACKER_PATH: /Users/mahesh/Documents/Claude/Projects/Brindari.com/03_Brindari_Operations_Toolkit.xlsx`
 
-Until this is set, agents do not create a tracker of their own. They end every run with a "Tracker rows" block (see section 5 format) for a person to paste in.
+Decided 2026-11-10 (A12). The workbook today holds: 01 Read Me, 02 Dashboard, 03 Lead CRM, 04 Buyer Database, 05 Supplier Scorecard, 06 Order Tracker, 07 Shipment Tracker, 08 FOB Pricing, 09 Inventory, 10 P&L Model, 11 Cash Flow. The section 5 tabs **Activity log, Tasks, Approvals, Decisions, Diversification pipeline, Compliance and Marketing KPIs do not exist yet** and must be added to this same workbook (no new file).
+
+Other source files:
+- Master: `/Users/mahesh/Downloads/Brindari_Master_v5.xlsx` (India Suppliers, Supplier Questions, Outreach Scripts, 7-Day Action Plan, Global Buyers, Buyer Outreach Scripts)
+- Marketing research: `/Users/mahesh/Downloads/Brindari_Marketing_Research_v3.xlsx`
+- Launch packs (PDF): `/Users/mahesh/Documents/Claude/Projects/Brindari.com/01_…`, `02_Brindari_Brand_and_Website_Copy.pdf`, `04_Brindari_Sales_and_Outreach_Kit.pdf`
+- Research: `/Users/mahesh/Desktop/Brindari Global Research/` (market research report, buyer/supplier contacts, ActionPack, TradeMap analysis)
+
+Agents read these files. Until the missing tabs exist, agents end every run with a "Tracker rows" block (see section 5 format) for a person to paste in. Agents never write to the workbook directly while it may be open in a spreadsheet app.
 
 ## 1. Company and objective
 Brindari Global (brand: Brindari, brindari.com) is a B2B export business based in Maharashtra, India. Slogan: "Pure. Organic. Global."
@@ -21,29 +29,29 @@ Overall aim: build a stable, higher-margin export business. Two paths run in par
 Team:
 - Mahesh: Co-Founder & COO
 - Punam: Founder & CEO
-- Decision rights: [CONFIRM. Which decisions go to Punam, which to Mahesh, and who approves spending?]
-- Marketing owner: [CONFIRM. Not recorded in the notes.]
-- Radar's team owner: [CONFIRM]
-- Vista's team owner (diversification research): [CONFIRM]
+- Decision rights (decided 2026-11-10): every approval request, spending request, and review goes first to **Atlas (chief of staff)**. Atlas reviews it and informs **both Mahesh and Punam**, who make the decision. Atlas never approves on their behalf.
+- Marketing owner: Atlas reviews, then informs Mahesh and Punam.
+- Radar's reviewer: Atlas reviews, then informs Mahesh and Punam.
+- Vista's reviewer: Atlas reviews, then informs Mahesh and Punam.
 
-Entity: [CONFIRM. Sole proprietorship or Pvt Ltd? Name to use: "Brindari Global" as the dashboard rule requires, or "Brindari" as the early plan suggests?]
+Entity (decided 2026-11-10): treat as a **sole proprietorship for now**; a move to Pvt Ltd is under discussion. Trading name in all external copy: **Brindari Global**.
 
 Positioning: describe Brindari accurately, as a company that sources and exports organic moringa products from India. Do not describe it in a way that hides what the business does. Brand voice is calm and expert: lead with farmer specifics and lab data, avoid hype, urgency tactics, and exclamation marks. Brand colours: Brindari Teal #0F6E56, Deep Teal #0A5040, Heritage Gold #EF9F27, Sage #7BA88A, Cream #FAEEDA. Fonts: Cormorant Garamond for headings, DM Sans for body.
 
 ## 2. Product and compliance facts (verify before use)
-- HS code: [CONFIRM. 12119029 in the master file; 1211.90.99 or 0712.90.90 in the early plan.]
-- Sourcing region: [CONFIRM. Maharashtra per the dashboard rule; Tamil Nadu, Andhra Pradesh, and Karnataka per the early plan.]
+- HS code (decided 2026-11-10): **12119029**. Use it everywhere; Compass still checks it against the official ITC(HS) schedule and flags any mismatch.
+- Office and sourcing (decided 2026-11-10): the **office is in Maharashtra**. Moringa is **sourced from across India, mainly Tamil Nadu, Andhra Pradesh and Karnataka**. Do not say the product is grown or sourced in Maharashtra.
 - Registrations: IEC, GST, AD Code, ICEGATE, APEDA RCMC, FSSAI, MSME. Current status unknown; Compass verifies first.
 - Certifications to verify: USDA Organic, EU Organic, Halal (Jamiat Ulama-i-Hind, Halal India, or OneCert Asia/JAKIM, cost ₹15k–50k, 4–8 weeks), ISO 22000.
 - Duty claims to verify: India-UAE CEPA shows 0% import duty, and ASEAN-India FTA shows 0% for Malaysia. Confirm before any buyer-facing use.
-- Buyer count: the master lists 22 global buyers and separately mentions 4 Malaysia additions. Confirm the total.
+- Buyer count (confirmed 2026-11-10): **no buyers yet.** The "Global Buyers" list in the master (22, plus 4 Malaysia additions) is a list of **prospects**, not customers. Never describe them as buyers or customers.
 
 ## 3. Infrastructure we have built
 - Website: brindari.com. Next.js, Supabase, Vercel. Pending: royalty-free moringa images.
 - CEO dashboard: brindari-ceo-dashboard.vercel.app. Repo: Brindari_CEO_Dashboard, branch chore/prod-config-updates.
-  - Social Marketing (/social): live. Facebook KPI cards, 19-group tracker, post calendar. LinkedIn tab is a placeholder. KPIs are edited by hand; there is no Supabase table yet.
+  - Social Marketing (/social): **removed from `main` on 13 Sep 2026** (commit b680965). It had Facebook KPI cards, a 19-group tracker and a post calendar. Marketing KPIs now live in the tracker only.
   - Email outreach module: in progress. Known issues: company name, email signature, and country-specific opening paragraphs. Founder reviews every draft before sending. Fixes have previously broken working elements, so changes must be surgical.
-  - Supplier discovery module: architecture finalised, status [CONFIRM]. Planned stack: Python 3.11, httpx, BeautifulSoup4, lxml, Playwright, with SQLite or PostgreSQL. Sources: IndiaMART, TradeIndia, APEDA. Target: results in 10–15 minutes, 0–100 supplier scoring.
+  - Supplier discovery module (checked 2026-11-10): **already built in TypeScript** in the dashboard: `src/lib/supplier-scraper.ts`, page `/suppliers/discover`, API `api/suppliers/discover*`, Supabase tables from migration `20260519000001`. Sources: IndiaMART export portal, APEDA, Google Maps, company websites (no TradeIndia). Scores 0–100 and has approve/reject review. It launches a full Playwright browser inside one API request, so it is expected to run only on a local machine, not on Vercel. The earlier Python 3.11 plan is **not to be built**; improve this module instead. The module finds candidates only: Harvest (suppliers) and Scout (buyers) decide what is high-rated and trustworthy, using the verification standards in their agent files.
   - Command Center: eight phases covering foundation, product research, supplier sourcing, branding, AI agents, dashboard tech stack, sales, and scaling. Includes an automate-vs-manual framework.
 - Excel toolkit: Brindari_Master_v5 (suppliers, certifications, buyers, priority matrix, reference guide, outreach scripts), Brindari_Marketing_Research_v3, Brindari_SocialMedia_Execution_v1 (30-day calendar, 15 LinkedIn posts, 6 Facebook group posts, group checklist, DM scripts), and the operations toolkit (Dashboard, Lead CRM, Buyer DB, Supplier Scorecard, Order and Shipment Trackers, FOB Calculator, Inventory, P&L, 13-week cash flow).
 - Launch documents (PDF): business setup pack, brand and website copy pack, sales and outreach kit.
@@ -52,7 +60,7 @@ Rule: reuse the existing toolkit sheets and the tracker in section 5. Do not cre
 
 ## 4. Marketing status (as of Sep 2026; re-verify)
 - Facebook: active. 19 groups. Goals: 50,000 reach per month, 15 sample leads per month ("BULK SAMPLE" comments), 6 posts per week. Posts go at 9 AM, 1 PM, or 6 PM IST. Post to no more than 3–4 groups per day.
-- LinkedIn: Phase 2 planned. Target: procurement managers, import directors, and sourcing heads at nutraceutical companies in DACH, GCC, and the UK. Planned: 50+ connection requests per week, 5 InMails per day, 10 posts per month. Setup was scheduled for 15 Sep 2026; status [CONFIRM].
+- LinkedIn: Phase 2 planned. Target: procurement managers, import directors, and sourcing heads at nutraceutical companies in DACH, GCC, and the UK. Planned: 50+ connection requests per week, 5 InMails per day, 10 posts per month. Setup was scheduled for 15 Sep 2026. Checked 2026-11-10: no public Brindari Global LinkedIn page was found by web search; whether a page or personal profiles were set up still needs a founder to check while signed in to LinkedIn.
 - Email outreach: German buyers (Abbott Blackstone, Sanleaf), UAE and Malaysia buyers. Founder approves every draft.
 - IndiaMART listing: guide pending.
 
@@ -96,8 +104,8 @@ Phase 1, now:
 - Scout (buyer research): verifies buyers in Germany, UAE, Malaysia, and Philippines first. Uses the Lead CRM and Buyer DB. Does not contact anyone.
 - Harvest (supplier sourcing): runs the Task 3 research using the Supplier Scorecard and the discovery module once built. Tracks quotes and samples. Does not agree to prices or terms.
 - Herald (outreach): drafts emails, LinkedIn messages, and WhatsApp scripts. Sends only approved messages to Scout-verified contacts. Does not negotiate.
-- Radar (opportunity scout): monitors trends and service ideas across markets. Writes an opportunity card for each one, and passes promising products to Vista. Does not run deep studies. Reviewed by [Radar owner].
-- Vista (diversification research): owns the search for safe, higher-margin export categories and the diversification pipeline. Runs the framework in section 7 for every candidate. Works with Scout and Harvest on buyers and suppliers, and with Compass on compliance. Does not commit to any product. Reviewed by [Vista owner].
+- Radar (opportunity scout): monitors trends and service ideas across markets. Writes an opportunity card for each one, and passes promising products to Vista. Does not run deep studies. Reviewed by Atlas, who informs Mahesh and Punam.
+- Vista (diversification research): owns the search for safe, higher-margin export categories and the diversification pipeline. Runs the framework in section 7 for every candidate. Works with Scout and Harvest on buyers and suppliers, and with Compass on compliance. Does not commit to any product. Reviewed by Atlas, who informs Mahesh and Punam.
 
 Phase 2, after first enquiries:
 - Quill (website and listings): website copy, product descriptions, IndiaMART listing. Uses the brand pack copy as the canonical text.

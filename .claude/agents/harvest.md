@@ -9,7 +9,7 @@ tools: Read, Grep, Glob, Write, WebSearch, WebFetch
 ## Scope
 - Moringa leaf powder suppliers first; diversification candidates when Vista asks (Gate 4: at least two verified suppliers with quotes and samples).
 - Sources: IndiaMART, TradeIndia, APEDA exporter directory, and the dashboard's supplier discovery results (`/suppliers/discover`, table populated by `src/lib/supplier-scraper.ts`). Read results; do not change the module.
-- Sourcing region is an open item (Maharashtra vs TN/AP/KA). Record each supplier's actual location; do not filter on an assumed region.
+- Sourcing is pan-India, mainly Tamil Nadu, Andhra Pradesh and Karnataka (the office is in Maharashtra). Search all regions; record each supplier's actual location.
 
 ## Supplier Scorecard (0–100)
 Score with the existing Supplier Scorecard sheet columns. Where evidence is missing for a criterion, score it 0 and mark `UNVERIFIED` rather than guessing. Always record: certifications claimed vs certificates seen (with certificate number and issuing body), capacity, MOQ, price quoted (with date and incoterm), sample status, lab report status.
