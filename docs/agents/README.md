@@ -38,7 +38,7 @@ The shared tracker is in Supabase (`agent_*` tables). The dashboard shows it at 
 | `npm run agent:excel -- export` | founders, on the Mac | Write the tracker into toolkit tabs 12–20 (backup first; refuses while the file is open) |
 | `npm run agent:excel -- import-sources` | founders, on the Mac | Copy the research workbooks into Supabase for agents (re-run after editing them) |
 
-`agent:excel` needs the Python environment once: `python3 -m venv scripts/agents/.venv && scripts/agents/.venv/bin/pip install openpyxl==3.1.5`.
+`agent:excel` needs the Python environment once: `python3 -m venv scripts/agents/.venv && scripts/agents/.venv/bin/pip install openpyxl==3.1.5 certifi==2025.8.3`.
 
 **Credentials.** Scripts read `NEXT_PUBLIC_SUPABASE_URL` and a key from the environment (cloud) or `.env.local` (Mac). They prefer `AGENT_SUPABASE_KEY`: a key for the `brindari_agent` database role, which can only read, add tracker rows, and add Scout leads (enforced by the database). Without it they fall back to `SUPABASE_SERVICE_ROLE_KEY`, with the same limits enforced by the scripts only.
 

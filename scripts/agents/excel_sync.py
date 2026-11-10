@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -38,6 +39,11 @@ SOURCES = {
     "actionpack": "/Users/mahesh/Desktop/Brindari Global Research/4. Brindari_ActionPack.xlsx",
 }
 IST = timezone(timedelta(hours=5, minutes=30))
+try:  # python.org builds on macOS ship without CA certificates; use certifi's bundle when present
+    import certifi
+    SSL_CTX = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    SSL_CTX = ssl.create_default_context()
 HEADER_ROW, FIRST = 6, 7
 TEAL, CREAM = "FF0F6E56", "FFFAEEDA"
 
@@ -90,7 +96,7 @@ def api(method: str, path: str, body=None, params: dict | None = None):
     if body is not None:
         req.data = json.dumps(body, default=str).encode()
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
+        with urllib.request.urlopen(req, timeout=60, context=SSL_CTX) as r:
             text = r.read().decode()
             return json.loads(text) if text else None
     except urllib.error.HTTPError as e:
@@ -100,7 +106,7 @@ def api(method: str, path: str, body=None, params: dict | None = None):
 def header_and_rows(ws, header_row=None):
     rows = [list(r) for r in ws.iter_rows(values_only=True)]
     if header_row is None:
-        header_row = next((i for i, r in enumerate(rows) if sum(isinstance(v, str) and v.strip() for v in r) >= 4), None)
+        header_row = next((i for i, r in enumerate(rows) if sum(bool(isinstance(v, str) and v.strip()) for v in r) >= 4), None)
         if header_row is None:
             return [], []
     else:
