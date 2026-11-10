@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "agent:read": "node scripts/agents/db-read.mjs",
-    "agent:tracker": "scripts/agents/.venv/bin/python -I scripts/agents/tracker.py"
+    "agent:tracker": "scripts/agents/.venv/bin/python -I scripts/agents/tracker.py",
+    "agent:add-lead": "node scripts/agents/db-add-lead.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.2",

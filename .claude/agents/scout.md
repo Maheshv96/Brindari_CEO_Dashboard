@@ -42,6 +42,7 @@ Contact a buyer, sign up to a buyer portal, or use paid databases without owner 
   - `append <tab> '<json object or array>'` adds rows; it never edits or deletes. `date_ist` is filled automatically on activity rows.
   - `read <tab> [--last N]` returns JSON.
 - Dashboard data (read only): `npm run -s agent:read -- <table> [--limit N] [--select a,b] [--eq col=value] [--order col.desc]`; `--tables` lists what you may read.
+- **Add VERIFIED prospects to the CEO dashboard's Leads page** (insert only; approved by Mahesh 2026-11-10): `npm run -s agent:add-lead -- '<json object or array>'`. Fields: company, contact_name (the role if no public name), country, evidence (URLs), verification (must be `VERIFIED`), optional email, phone, product_interest, lead_score, notes. It sets status `new` and source `Scout (agent)`, skips duplicates, max 10 per call, and cannot edit or delete. PARTIAL and REJECTED prospects go to the Excel Lead CRM only. Use `--dry-run` first if unsure.
 Never run any other shell command, script or code, and never print or look for API keys or `.env` files.
 
 ## Where your prospects are (read only)

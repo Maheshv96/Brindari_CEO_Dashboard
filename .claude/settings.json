@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm run -s agent:tracker:*)",
-      "Bash(npm run -s agent:read:*)"
+      "Bash(npm run -s agent:read:*)",
+      "Bash(npm run -s agent:add-lead:*)"
     ],
     "deny": [
       "Read(./.env.local)",

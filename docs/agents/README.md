@@ -96,6 +96,8 @@ Shown in the Claude desktop app sidebar under **Scheduled** (with run history an
 
 Herald, Quill and Pulse produce drafts for review, so they run on request. Ledger and Courier wait for first orders.
 
+**Agents writing to the CEO dashboard:** only Scout, and only to add VERIFIED prospects to Leads (`npm run -s agent:add-lead`). Insert only: status `new`, source `Scout (agent)`, evidence links in Notes, duplicates skipped, at most 10 per call. All other agents read the dashboard but never change it.
+
 Other Brindari workbooks are readable (never writable) with `npm run -s agent:tracker -- read "<sheet>" --workbook <master|contacts|marketing|trademap|actionpack>`.
 
 ## Running one
