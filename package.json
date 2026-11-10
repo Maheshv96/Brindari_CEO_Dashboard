@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "agent:read": "node scripts/agents/db-read.mjs",
+    "agent:tracker": "scripts/agents/.venv/bin/python -I scripts/agents/tracker.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.2",

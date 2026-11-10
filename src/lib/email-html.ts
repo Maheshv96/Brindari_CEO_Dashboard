@@ -11,7 +11,9 @@ export const BRAND = {
 };
 
 // ── Origin paragraph (Priority 3) ─────────────────────────────────────────────
-export const ORIGIN_PARA = `Sourced from Maharashtra, India — a region with an ideal tropical climate, mineral-rich soil, and year-round growing seasons perfectly suited to moringa cultivation. Our partnerships with local farmers ensure consistent quality and full traceability from farm to shipment. Brindari Global manages the complete export process — processing, quality checks, documentation, and logistics.`;
+// Office is in Maharashtra; moringa is sourced across India, mainly TN, AP and KA (founder decision A8, 2026-11-10).
+// Do not claim Maharashtra as the growing region or claim traceability without evidence.
+export const ORIGIN_PARA = `Brindari Global is based in Maharashtra and sources moringa from farms across India, mainly in Tamil Nadu, Andhra Pradesh and Karnataka. We coordinate processing, quality checks, export documentation and logistics for each shipment.`;
 
 // ── Certification descriptions (Priority 1) ───────────────────────────────────
 export const CERT_DESCRIPTIONS: Record<string, string> = {
@@ -27,6 +29,8 @@ export const CERT_DESCRIPTIONS: Record<string, string> = {
 };
 
 // ── Market-specific pricing (Priority 6) ──────────────────────────────────────
+// UNVERIFIED reference figures only. Not inserted into emails automatically:
+// a price reaches a buyer only when the founder types it into the email form.
 export const MARKET_PRICING: Record<string, { fob: number; moq: number; port: string }> = {
   USA:          { fob: 4.80, moq: 500, port: "Mumbai/JNPT" },
   Canada:       { fob: 4.80, moq: 500, port: "Mumbai/JNPT" },
@@ -223,7 +227,7 @@ export function buildEmailHtml(introText: string, details: EmailDetails = {}, lo
       );
     } else {
       detailRows.push(
-        `<strong style="color:${D};">Certifications:</strong> <em style="color:#9ca3af;font-size:13px;">HACCP · FSSAI · APEDA · NABL — available on request</em>`
+        `<strong style="color:${D};">Certifications:</strong> <em style="color:#9ca3af;font-size:13px;">Certification details available on request</em>`
       );
     }
   }
@@ -254,7 +258,7 @@ export function buildEmailHtml(introText: string, details: EmailDetails = {}, lo
         "Certificate of Analysis (COA)",
         "Phytosanitary Certificate",
         "Certificate of Origin",
-        "HACCP / FSSAI Certificates",
+        "Food Safety Certificates (as applicable)",
         "Packing List &amp; Commercial Invoice",
       ].map(doc => `
         <tr>
@@ -365,7 +369,7 @@ export function buildEmailText(introText: string, details: EmailDetails = {}): s
         const d = CERT_DESCRIPTIONS[c];
         return `  • ${c}${d ? ` — ${d}` : ""}`;
       }).join("\n")
-    : "  • HACCP, FSSAI, APEDA, NABL — documentation available on request";
+    : "  • Certification details available on request";
 
   const extraLines: string[] = [];
   if (details.port)              extraLines.push(`- Port of Loading: ${details.port}`);
@@ -381,7 +385,7 @@ Documentation provided with every shipment:
   • Certificate of Analysis (COA)
   • Phytosanitary Certificate
   • Certificate of Origin
-  • HACCP / FSSAI Certificates
+  • Food Safety Certificates (as applicable)
   • Packing List & Commercial Invoice
 ` : "";
 
@@ -398,7 +402,7 @@ Certifications:
 ${certLine}
 ${details.sample !== false ? "- Sample Shipment: available on request (buyer arranges freight)" : ""}
 ${docsBlock}
-Happy to share spec sheets, lab reports, and certificate copies if useful.
+Happy to share spec sheets and lab reports if useful.
 
 --
 ${BRAND.name}

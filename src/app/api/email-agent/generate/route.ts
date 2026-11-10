@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       system: `You write B2B outreach emails for Brindari Global, an organic moringa exporter from India.
 Brand: "Brindari Global" | Website: www.brindari.com | Tagline: "Pure. Organic. Global."
 Products: Organic Moringa Powder, Capsules, Oil, Seeds, Tea, Dried Leaf — sourced in India.
-Brindari Global is a new exporter building its international buyer network.
+Brindari Global is a new exporter building its international buyer network. It has no customers yet: never imply existing buyers, clients, past shipments or testimonials.
 
 WRITING RULES — NON-NEGOTIABLE:
 - Tone: ${toneInstr}
