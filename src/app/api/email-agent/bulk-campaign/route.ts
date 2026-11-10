@@ -43,7 +43,7 @@ const SEQUENCE_CONTEXT: Record<number, { prompt: string; subjectPrefix: string; 
 function buildSubject(aiSubject: string, fobPrice: string | undefined, stage: number): string {
   const fob = fobPrice ? `FOB $${fobPrice}/kg` : "";
   const templates: Record<number, string> = {
-    1: fob ? `Premium Organic Moringa from India — ${fob}` : `Premium Organic Moringa from India — Brindari Global`,
+    1: fob ? `Organic Moringa from India — ${fob}` : `Organic Moringa from India — Brindari Global`,
     2: aiSubject || `Moringa Specifications & Documentation — Brindari Global`,
     3: `Your Moringa Sample — Next Steps | Brindari Global`,
     4: aiSubject || `Following up: Moringa Sourcing — Brindari Global`,
@@ -96,10 +96,11 @@ export async function POST(req: NextRequest) {
 
     for (const lead of validLeads) {
       try {
-        // Market-specific pricing — use explicit values or fall back to market table
+        // Price and MOQ only when entered explicitly in the form. MARKET_PRICING figures are
+        // unverified and must not be quoted to buyers automatically (operating rules 1 and 8).
         const mkt         = MARKET_PRICING[lead.country];
-        const effectiveFob = fob_price || (mkt ? String(mkt.fob) : undefined);
-        const effectiveMoq = moq       || (mkt ? String(mkt.moq) : undefined);
+        const effectiveFob = fob_price || undefined;
+        const effectiveMoq = moq       || undefined;
         const effectivePort = mkt?.port || "Mumbai/JNPT";
 
         const details: EmailDetails = {
@@ -125,9 +126,9 @@ export async function POST(req: NextRequest) {
 
         const result = await callAI({
           maxTokens: 400,
-          system: `You write B2B outreach emails for ${BRAND.name}, an organic moringa exporter from Maharashtra, India.
+          system: `You write B2B outreach emails for ${BRAND.name}, an India-based organic moringa exporter. The office is in Maharashtra; moringa is sourced from across India, mainly Tamil Nadu, Andhra Pradesh and Karnataka.
 Brand: "${BRAND.name}" | Tagline: "Pure. Organic. Global."
-RULES: Source region is Maharashtra, India. Never say "high-quality", "leading", "premium". Never invent specs. No sign-off — template adds signature. Max 120 words in body.`,
+RULES: Never say the moringa is grown or sourced in Maharashtra. ${BRAND.name} is a new exporter with no customers yet: never imply existing buyers, clients or past shipments. Never say "high-quality", "leading", "premium". Never invent specs. No sign-off — template adds signature. Max 120 words in body.`,
           prompt: `Write a ${stage.prompt} email for:
 Company: ${lead.company}
 Contact: ${lead.contact_name || "the buyer"}
