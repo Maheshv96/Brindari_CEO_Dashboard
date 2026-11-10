@@ -5,23 +5,13 @@
 
 ## 0. Tracker location
 
-`TRACKER_PATH: /Users/mahesh/Documents/Claude/Projects/Brindari.com/03_Brindari_Operations_Toolkit.xlsx`
+**The shared tracker lives in Supabase** (tables `agent_*`, migration `supabase/migrations/20261110000001_agent_tracker.sql`), so agents can run in the cloud and the CEO dashboard shows it at **/agents** (approvals, tasks, activity, Atlas's updates). Decided 2026-11-10 (A18).
 
-Decided 2026-11-10 (A12). The workbook today holds: 01 Read Me, 02 Dashboard, 03 Lead CRM, 04 Buyer Database, 05 Supplier Scorecard, 06 Order Tracker, 07 Shipment Tracker, 08 FOB Pricing, 09 Inventory, 10 P&L Model, 11 Cash Flow. Tabs **12 Activity Log, 13 Tasks, 14 Approvals, 15 Decisions, 16 Diversification, 17 Compliance, 18 Marketing KPIs** were added on 2026-11-10 (section 5 tabs 1–4, 7, 9, 10). Tabs 5, 6, 8 and 11 of section 5 map to the existing sheets 03, 04/05, 06/07 and 11.
-
-**Sheets 03–11 still contain the template's sample rows** (e.g. "Living Foods Co", "TerraVita Italia", 555 phone numbers, April–May 2026 dates). Treat them as SAMPLE, not real data, until a Decisions row records they were cleared.
-
-Tools (see [README](README.md#tools)):
-- `npm run -s agent:tracker -- …` reads and appends tracker rows. Append only, refuses while the workbook is open, backs up before every write.
-- `npm run -s agent:read -- <table> …` reads dashboard data from Supabase. GET only, fixed table list.
-
-Other source files:
-- Master: `/Users/mahesh/Downloads/Brindari_Master_v5.xlsx` (India Suppliers, Supplier Questions, Outreach Scripts, 7-Day Action Plan, Global Buyers, Buyer Outreach Scripts)
-- Marketing research: `/Users/mahesh/Downloads/Brindari_Marketing_Research_v3.xlsx`
-- Launch packs (PDF): `/Users/mahesh/Documents/Claude/Projects/Brindari.com/01_…`, `02_Brindari_Brand_and_Website_Copy.pdf`, `04_Brindari_Sales_and_Outreach_Kit.pdf`
-- Research: `/Users/mahesh/Desktop/Brindari Global Research/` (market research report, buyer/supplier contacts, ActionPack, TradeMap analysis)
-
-Agents read these files. Agents that cannot run the tracker command, or find the workbook open, end their run with a "Tracker rows" block (see section 5 format) for a person to paste in. Nothing writes to the workbook while it is open in a spreadsheet app.
+- Agents use `npm run -s agent:tracker -- …` (add-only) and `npm run -s agent:read -- …` (dashboard data, read only). Scout may also add VERIFIED prospects to Leads with `agent:add-lead`.
+- Founders decide approvals and update task status on the dashboard's Agents page.
+- The Excel toolkit (`/Users/mahesh/Documents/Claude/Projects/Brindari.com/03_Brindari_Operations_Toolkit.xlsx`) is now an **export**: `npm run agent:excel -- export` writes the tracker into tabs 12–20. Edits made in Excel are not synced back.
+- The founders' research workbooks (Master_v5, Buyer/Supplier Contacts, Marketing Research, TradeMap, ActionPack) are copied into Supabase (`agent_sources`) with `npm run agent:excel -- import-sources`, so cloud agents can read them. Re-run it after editing those files.
+- Toolkit sheets 03–11 still hold template sample rows; agents do not use them.
 
 ## 1. Company and objective
 Brindari Global (brand: Brindari, brindari.com) is a B2B export business based in Maharashtra, India. Slogan: "Pure. Organic. Global."
@@ -76,7 +66,7 @@ Scrub existing content before reuse. Remove the "premium health brand doing pure
 One tracker, built on the operations toolkit, is the place everyone updates and the place every report is drawn from. Every person and every agent works from it.
 
 Tabs:
-1. Activity log: date (IST), actor (person or agent), action, item, status, needs_approval (yes/no), source, notes. Every agent writes here after every action.
+1. Activity log: date (IST), actor (person or agent), action, item, status, needs_approval (yes/no), source, notes. Every agent writes here after every action. (Supabase: `agent_activity`; tab names for the other items are in `npm run -s agent:tracker -- tabs`.)
 2. Tasks: task, owner, priority, status (not started, in progress, blocked, done), due date, blocker.
 3. Approvals: item, requested by, reason, risk, decision (approved, rejected, changed), decided by, date.
 4. Decisions: date, decision, who decided, reason, what it changes.

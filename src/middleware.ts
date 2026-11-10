@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 const PROTECTED = [
   "/", "/leads", "/orders", "/revenue", "/invoices",
   "/buyers", "/shipments", "/documents", "/calculator",
-  "/suppliers", "/emails",
+  "/suppliers", "/emails", "/agents",
 ];
 
 function isProtected(pathname: string): boolean {

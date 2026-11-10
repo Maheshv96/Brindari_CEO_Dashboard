@@ -38,3 +38,4 @@ next-env.d.ts
 
 # Brindari agent scripts
 scripts/agents/.venv/
+scripts/agents/__pycache__/

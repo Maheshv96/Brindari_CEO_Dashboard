@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, UserCheck, ShoppingCart,
   TrendingUp, FileText, Ship, FolderOpen, Calculator,
-  Factory, Mail, ExternalLink, LogOut, Telescope,
+  Factory, Mail, ExternalLink, LogOut, Telescope, Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrindariLogo } from "@/components/ui/BrindariLogo";
@@ -18,6 +18,7 @@ const NAV_GROUPS = [
     label: "Overview",
     items: [
       { href: "/",        label: "Dashboard",       icon: LayoutDashboard },
+      { href: "/agents",  label: "Agents",          icon: Bot             },
     ],
   },
   {
