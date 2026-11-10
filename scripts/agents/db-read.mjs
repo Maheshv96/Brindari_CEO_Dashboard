@@ -10,14 +10,10 @@
  *   - Only tables in ALLOWED can be read.
  *   - The key is read from .env.local and never printed.
  *
- * Caveat: until a dedicated read-only Postgres role exists (see docs/agents/README.md),
- * this uses SUPABASE_SERVICE_ROLE_KEY, which bypasses row-level security. The read-only
- * guarantee therefore comes from this script, so agents may run ONLY this script, never
- * arbitrary code that could reuse the key.
+ * Key: AGENT_SUPABASE_KEY (brindari_agent role: read-only on these tables at database level)
+ * if set, else SUPABASE_SERVICE_ROLE_KEY (read-only enforced by this script). See lib.mjs.
  */
-import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import { supabase } from "./lib.mjs";
 
 const ALLOWED = {
   leads:                   "Lead pipeline (dashboard)",
@@ -41,27 +37,6 @@ const IDENT = /^[a-z_][a-z0-9_]*$/;
 function fail(msg, code = 1) {
   process.stderr.write(`agent:read: ${msg}\n`);
   process.exit(code);
-}
-
-function loadEnv() {
-  const candidates = [path.resolve(".env.local")];
-  try {
-    const common = execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-common-dir"], { encoding: "utf8" }).trim();
-    candidates.push(path.join(path.dirname(common), ".env.local")); // main checkout when run from a worktree
-  } catch { /* not a git checkout */ }
-  const env = {};
-  for (const file of candidates) {
-    if (!existsSync(file)) continue;
-    for (const line of readFileSync(file, "utf8").split("\n")) {
-      const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
-      if (m && !(m[1] in env)) env[m[1]] = m[2].replace(/^["']|["']$/g, "");
-    }
-    break;
-  }
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.AGENT_SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || env.AGENT_SUPABASE_KEY || env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) fail("NEXT_PUBLIC_SUPABASE_URL and a key are required in .env.local");
-  return { url: url.replace(/\/$/, ""), key };
 }
 
 function parseArgs(argv) {
@@ -103,12 +78,6 @@ if (args.order) {
   qs.set("order", `${col}.${dir || "asc"}`);
 }
 
-const { url, key } = loadEnv();
-const res = await fetch(`${url}/rest/v1/${args.table}?${qs}`, {
-  method: "GET",
-  headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" },
-});
-const body = await res.text();
-if (!res.ok) fail(`HTTP ${res.status}: ${body.slice(0, 300)}`);
-const rows = JSON.parse(body);
+const db = supabase("agent:read");
+const rows = await db.get(args.table, Object.fromEntries(qs));
 console.log(JSON.stringify({ table: args.table, count: rows.length, rows }, null, 1));

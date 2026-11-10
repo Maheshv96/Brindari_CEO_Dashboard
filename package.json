@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "agent:read": "node scripts/agents/db-read.mjs",
-    "agent:tracker": "scripts/agents/.venv/bin/python -I scripts/agents/tracker.py",
-    "agent:add-lead": "node scripts/agents/db-add-lead.mjs"
+    "agent:tracker": "node scripts/agents/tracker.mjs",
+    "agent:add-lead": "node scripts/agents/db-add-lead.mjs",
+    "agent:excel": "scripts/agents/.venv/bin/python -I scripts/agents/excel_sync.py",
+    "agent:mint-key": "node scripts/agents/mint-agent-key.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.2",

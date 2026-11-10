@@ -32,6 +32,7 @@ Last updated: 2026-11-10.
 | A14 | Agent shell access | **Granted by Mahesh 2026-11-10.** Agents may run only `agent:tracker` and `agent:read`; pre-approved in `.claude/settings.json`. Tested: an Atlas digest read the tracker and logged its run. | Done |
 | A16 | Scheduled runs | **Done 2026-11-10:** 7 schedules (Atlas daily + weekly, Vista, Scout, Harvest, Radar, Compass), all run from `/Users/mahesh/Brindari_CEO_Dashboard`. See README. | Done |
 | A17 | Agents writing to the dashboard | **Decided 2026-11-10 (Mahesh): Scout only**, insert-only to `leads` for VERIFIED prospects (`agent:add-lead`). Tested with TEST rows, which were deleted. | Done |
+| A18 | Always-on agents | **Building 2026-11-10:** tracker moved to Supabase, Agents page at /agents, cloud routines. Needs from Mahesh: apply the migration, connect GitHub to Claude, set the cloud environment's Supabase variables and network access. | Mahesh |
 | A15 | Read-only database user | `agent:read` uses the dashboard's service-role key and enforces read-only in code (GET only, fixed tables). For database-level read-only, create a read-only key (SQL in README) and set `AGENT_SUPABASE_KEY`. | Mahesh |
 
 ## B. Facts to verify (Compass)

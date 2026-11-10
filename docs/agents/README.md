@@ -28,73 +28,38 @@ No agent has a tool that can send email, post, pay or file. Agents log to the sh
 
 ## Tools
 
-Two commands give agents (and you) access to data. Both are in `scripts/agents/`.
+The shared tracker is in Supabase (`agent_*` tables). The dashboard shows it at **/agents**.
 
-**Tracker** (`03_Brindari_Operations_Toolkit.xlsx`, path in BRIEF §0)
+| Command | Who | What |
+|---|---|---|
+| `npm run -s agent:tracker -- …` | all agents | `tabs`, `columns <tab>`, `read <tab>`, `append <tab> '<json>'`, `output …`, `output-read <id>`, `read "<sheet>" --workbook <name>`. Add-only. |
+| `npm run -s agent:read -- <table> …` | atlas, scout, harvest, vista, compass, ledger, courier | Dashboard data, read only, fixed table list |
+| `npm run -s agent:add-lead -- '<json>'` | scout | Insert VERIFIED prospects into Leads (status `new`, source `Scout (agent)`) |
+| `npm run agent:excel -- export` | founders, on the Mac | Write the tracker into toolkit tabs 12–20 (backup first; refuses while the file is open) |
+| `npm run agent:excel -- import-sources` | founders, on the Mac | Copy the research workbooks into Supabase for agents (re-run after editing them) |
 
-```bash
-npm run -s agent:tracker -- tabs
-```
-```bash
-npm run -s agent:tracker -- columns approvals
-```
-```bash
-npm run -s agent:tracker -- read activity --last 20
-```
-```bash
-npm run -s agent:tracker -- append activity '{"actor":"Scout","action":"verified buyer","item":"Example GmbH","status":"done","needs_approval":"no","source":"https://example.de"}'
-```
+`agent:excel` needs the Python environment once: `python3 -m venv scripts/agents/.venv && scripts/agents/.venv/bin/pip install openpyxl==3.1.5 certifi==2025.8.3`.
 
-- Append only: it never edits or deletes rows.
-- Checks each field and its allowed values.
-- Refuses to write while the workbook is open in a spreadsheet app or has a fresh lock file.
-- Saves a backup to `Brindari.com/backups/` before every write and keeps the newest 30.
-- Formula cells survive, but their cached values are recalculated when the file is next opened in Excel or LibreOffice.
-
-First-time setup on a new machine (the Python environment is not committed):
-
-```bash
-python3 -m venv scripts/agents/.venv && scripts/agents/.venv/bin/pip install openpyxl==3.1.5
-```
-
-**Dashboard data, read only** (Supabase)
-
-```bash
-npm run -s agent:read -- --tables
-```
-```bash
-npm run -s agent:read -- discovered_suppliers --select company_name,state,total_score,status --order total_score.desc --limit 20
-```
-
-- Sends HTTP GET only, to a fixed list of tables. The key is never printed.
-- Reads `.env.local` from this checkout, or from the main checkout when run in a worktree.
-- It currently uses `SUPABASE_SERVICE_ROLE_KEY`, so read-only is enforced by the script, not by the database. For database-level read-only, create the role below in the Supabase SQL editor, mint a JWT for it with your project's JWT secret, and put it in `.env.local` as `AGENT_SUPABASE_KEY`. The script prefers that key when set.
-
-```sql
-create role agent_reader nologin;
-grant usage on schema public to agent_reader;
-grant select on leads, buyers, suppliers, supplier_quotes, discovered_suppliers,
-  supplier_discovery_jobs, orders, order_items, shipments, invoices,
-  email_campaigns, email_logs, fob_calculations, revenue to agent_reader;
-grant agent_reader to authenticator;
--- RLS: add a "for select to agent_reader using (true)" policy on each table above.
-```
+**Credentials.** Scripts read `NEXT_PUBLIC_SUPABASE_URL` and a key from the environment (cloud) or `.env.local` (Mac). They prefer `AGENT_SUPABASE_KEY`: a key for the `brindari_agent` database role, which can only read, add tracker rows, and add Scout leads (enforced by the database). Without it they fall back to `SUPABASE_SERVICE_ROLE_KEY`, with the same limits enforced by the scripts only.
 
 ## Schedules
 
 Shown in the Claude desktop app sidebar under **Scheduled** (with run history and **Run now**). Runs happen only while the app is open; a missed run happens on next launch. All run from `/Users/mahesh/Brindari_CEO_Dashboard`.
 
-| Agent | When (IST) | Status |
-|---|---|---|
-| Atlas [your chief of staff]: daily digest | Weekdays ~9 AM | Scheduled |
-| Vista [your diversification researcher]: research step | Mondays ~9:30 AM | Scheduled |
-| Scout [your buyer researcher]: verify 10 prospects | Tuesdays ~10 AM | Scheduled |
-| Harvest [your supplier sourcing lead]: review 8 suppliers | Wednesdays ~10 AM | Scheduled |
-| Radar [your opportunity scout]: opportunity scan | Thursdays ~10 AM | Scheduled |
-| Compass [your compliance tracker]: compliance check | Fridays ~10 AM | Scheduled |
-| Atlas [your chief of staff]: weekly review | Fridays ~5 PM | Scheduled |
+| Time (IST) | Agent | Days | Each run |
+|---|---|---|---|
+| 9:00 AM | Scout [your buyer researcher] | Mon–Sat | Verify 5 prospects; add VERIFIED ones to dashboard Leads |
+| 10:00 AM | Harvest [your supplier sourcing lead] | Mon–Sat | Review and score 4 suppliers |
+| 11:00 AM | Compass [your compliance tracker] | Mon–Sat until 24 Nov 2026, then Mon & Thu | 1–2 compliance checks |
+| 12:00 PM | Herald [your outreach writer] | Mon–Sat | Draft emails for up to 5 verified prospects, into Approvals (never sends) |
+| 2:00 PM | Vista [your diversification researcher] | Mon & Thu | One research step |
+| 3:00 PM | Radar [your opportunity scout] | Tue & Fri | Market and policy scan |
+| 7:00 PM | Atlas [your chief of staff] | Mon–Fri | Daily update: today by agent, what needs you, tomorrow's top 3 |
+| 7:00 PM | Atlas [your chief of staff] | Sat | Weekly review (replaces that day's update) |
 
-Herald, Quill and Pulse produce drafts for review, so they run on request. Ledger and Courier wait for first orders.
+**Limit:** these are local scheduled tasks. They run only while this Mac is on, awake and the Claude app is open; a missed run happens on next launch. See OPEN_ITEMS A18 for the always-on (cloud) plan.
+
+Quill and Pulse produce drafts for review, so they run on request. Ledger and Courier wait for first orders.
 
 **Agents writing to the CEO dashboard:** only Scout, and only to add VERIFIED prospects to Leads (`npm run -s agent:add-lead`). Insert only: status `new`, source `Scout (agent)`, evidence links in Notes, duplicates skipped, at most 10 per call. All other agents read the dashboard but never change it.
 
