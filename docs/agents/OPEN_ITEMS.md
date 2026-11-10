@@ -30,7 +30,8 @@ Last updated: 2026-11-10.
 | A12a | Tracker tabs | **Done 2026-11-10**: tabs 12–18 added; A1–A12 logged in 15 Decisions. Sample rows in sheets 03–11 still to clear (task in 13 Tasks). | Mahesh |
 | A13 | Supplier discovery on Vercel | **Checked 2026-11-10** from the job log: works locally, fails on Vercel (no browser). Run it locally, or move scraping off Vercel later. 16 suppliers await Harvest review. | Harvest / Mahesh |
 | A14 | Agent shell access | **Granted by Mahesh 2026-11-10.** Agents may run only `agent:tracker` and `agent:read`; pre-approved in `.claude/settings.json`. Tested: an Atlas digest read the tracker and logged its run. | Done |
-| A16 | Scheduled runs | **Set up 2026-11-10:** Atlas daily (weekdays ~9 AM, Auto mode), Vista weekly (Mondays ~9:30 AM, Auto mode), Radar weekly (Thursdays ~10 AM, no mode saved, may pause to ask). Runs fire only while the Claude app is open. Scheduled runs use the worktree path until PR #9 is merged; repoint them to the main checkout after. | Mahesh |
+| A16 | Scheduled runs | **Done 2026-11-10:** 7 schedules (Atlas daily + weekly, Vista, Scout, Harvest, Radar, Compass), all run from `/Users/mahesh/Brindari_CEO_Dashboard`. See README. | Done |
+| A17 | Agents writing to the dashboard | **Decided 2026-11-10 (Mahesh): Scout only**, insert-only to `leads` for VERIFIED prospects (`agent:add-lead`). Tested with TEST rows, which were deleted. | Done |
 | A15 | Read-only database user | `agent:read` uses the dashboard's service-role key and enforces read-only in code (GET only, fixed tables). For database-level read-only, create a read-only key (SQL in README) and set `AGENT_SUPABASE_KEY`. | Mahesh |
 
 ## B. Facts to verify (Compass)

@@ -9,6 +9,10 @@ rows; it never edits or deletes existing ones.
   tracker.py read  <tab> [--last N]       print a tab's rows as JSON
   tracker.py append <tab> '<json>'        append one row (JSON object) or many (JSON array)
   tracker.py columns <tab>                print the column names a tab expects
+  tracker.py read <sheet> --workbook <name> [--last N]
+                                          read-only access to another Brindari workbook:
+                                          master, contacts, marketing, trademap, actionpack
+                                          (no sheet name -> list its sheets)
 
 <tab> is a short name (activity, tasks, approvals, decisions, diversification,
 compliance, marketing) or an existing sheet's exact title (e.g. "03 Lead CRM").
@@ -41,6 +45,15 @@ HEADER_ROW = 6          # matches the existing toolkit sheets
 FIRST_DATA_ROW = 7
 KEEP_BACKUPS = 30
 FRESH_LOCK_HOURS = 12   # a lock file newer than this means "someone has it open"
+
+# Other Brindari workbooks agents may READ (never write).
+SOURCES = {
+    "master":     "/Users/mahesh/Downloads/Brindari_Master_v5.xlsx",
+    "contacts":   "/Users/mahesh/Desktop/Brindari Global Research/2. Brindari_Buyer_Supplier_Contacts.xlsx",
+    "marketing":  "/Users/mahesh/Downloads/Brindari_Marketing_Research_v3.xlsx",
+    "trademap":   "/Users/mahesh/Desktop/Brindari Global Research/5. Brindari_TradeMap_Analysis.xlsx",
+    "actionpack": "/Users/mahesh/Desktop/Brindari Global Research/4. Brindari_ActionPack.xlsx",
+}
 
 TEAL, CREAM, INK, GREY = "FF0F6E56", "FFFAEEDA", "FF1F2937", "FF4B5563"
 
@@ -222,6 +235,38 @@ def cmd_read(name: str, last: int | None) -> None:
     print(json.dumps(rows, ensure_ascii=False, indent=1, default=str))
 
 
+def cmd_read_source(alias: str, sheet: str | None, last: int | None) -> None:
+    if alias not in SOURCES:
+        die(f"unknown workbook '{alias}'. Choose: {', '.join(SOURCES)}")
+    path = Path(SOURCES[alias])
+    if not path.exists():
+        die(f"workbook not found: {path}")
+    wb = load_workbook(path, read_only=True, data_only=True)
+    if not sheet:
+        for ws in wb.worksheets:
+            print(ws.title)
+        return
+    if sheet not in wb.sheetnames:
+        die(f"no sheet '{sheet}' in {alias}. Sheets: {', '.join(wb.sheetnames)}")
+    rows = [list(r) for r in wb[sheet].iter_rows(values_only=True)]
+    # header = first row with at least 4 text cells (these files put headers in rows 2-6)
+    h = next((i for i, r in enumerate(rows) if sum(isinstance(v, str) and v.strip() != "" for v in r) >= 4), None)
+    if h is None:
+        die(f"could not find a header row in '{sheet}'")
+    hdr = [str(v).strip() if v is not None else f"col{i+1}" for i, v in enumerate(rows[h])]
+    out = []
+    for r in rows[h + 1:]:
+        if not any(v not in (None, "") for v in r):
+            continue
+        out.append({hdr[i]: (v.isoformat() if hasattr(v, "isoformat") else v)
+                    for i, v in enumerate(r) if i < len(hdr) and v not in (None, "")})
+    if last:
+        out = out[-last:]
+    print(json.dumps({"workbook": alias, "sheet": sheet, "header_row": h + 1,
+                      "note": "Source file claims (e.g. 'verified', certifications) are UNVERIFIED until checked.",
+                      "rows": out}, ensure_ascii=False, indent=1, default=str))
+
+
 def validate(row: dict, cols) -> dict:
     names = [c[0] for c in cols]
     unknown = set(row) - set(names)
@@ -281,7 +326,12 @@ def main(argv: list[str]) -> None:
         cmd_columns(rest[0])
     elif cmd == "read" and rest:
         last = int(rest[rest.index("--last") + 1]) if "--last" in rest else None
-        cmd_read(rest[0], last)
+        if "--workbook" in rest:
+            alias = rest[rest.index("--workbook") + 1]
+            pos = [a for i, a in enumerate(rest) if not a.startswith("--") and (i == 0 or rest[i - 1] not in ("--last", "--workbook"))]
+            cmd_read_source(alias, pos[0] if pos else None, last)
+        else:
+            cmd_read(rest[0], last)
     elif cmd == "append" and len(rest) == 2:
         cmd_append(rest[0], rest[1])
     else:
