@@ -202,7 +202,8 @@ def cmd_columns(name: str) -> None:
     if key not in TABS:
         die("columns is only defined for tracker tabs: " + ", ".join(TABS))
     for col, allowed, req in TABS[key][3]:
-        print(f"{col}\t{'required' if req else 'optional'}\t{'|'.join(allowed) if allowed else ''}")
+        need = "auto (filled if omitted)" if (key, col) == ("activity", "date_ist") else ("required" if req else "optional")
+        print(f"{col}\t{need}\t{'|'.join(allowed) if allowed else ''}")
 
 
 def cmd_read(name: str, last: int | None) -> None:

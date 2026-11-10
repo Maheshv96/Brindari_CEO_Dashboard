@@ -24,7 +24,7 @@ Eleven Claude Code subagents, defined in `.claude/agents/`, all working from one
 | 3 | **ledger** | Orders, P&L, cash, FOB maths | Invoices, moves money |
 | 3 | **courier** | Shipments and document checklist | Books or releases documents |
 
-No agent has a tool that can send email, post, pay or file. Agents log to the shared tracker (BRIEF §5) with `agent:tracker`. Until they are granted permission to run it (OPEN_ITEMS A14), they print a **Tracker rows** block and the main session appends it.
+No agent has a tool that can send email, post, pay or file. Agents log to the shared tracker (BRIEF §5) with `agent:tracker`, and the read-capable agents (atlas, scout, harvest, vista, compass, ledger, courier) can read dashboard data with `agent:read`. Those two commands are the only shell commands agents may run; both are pre-approved in `.claude/settings.json`. New agent files load in a **new** Claude Code session.
 
 ## Tools
 
