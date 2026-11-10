@@ -225,3 +225,6 @@ grant insert on leads to brindari_agent;
 drop policy if exists "leads: agent insert scout" on leads;
 create policy "leads: agent insert scout" on leads for insert to brindari_agent
   with check (source = 'Scout (agent)' and status = 'new' and deal_value_usd is null);
+
+-- Make the new tables visible to the API immediately
+notify pgrst, 'reload schema';
