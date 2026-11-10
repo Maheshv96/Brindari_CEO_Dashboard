@@ -10,19 +10,19 @@ Eleven Claude Code subagents, defined in `.claude/agents/`, all working from one
 
 ## Agents
 
-| Phase | Agent | Does | Never |
+| Phase | Agent (call it by the name in `code`) | Does | Never |
 |---|---|---|---|
-| All | **atlas** | Digests, weekly review, approvals triage, conflicts | Contacts anyone |
-| 1 | **scout** | Finds and verifies buyers | Contacts anyone |
-| 1 | **harvest** | Supplier research, scorecard, quotes, samples | Agrees prices or terms |
-| 1 | **herald** | Drafts outreach for founder approval | Sends, negotiates |
-| 1 | **radar** | Opportunity cards; passes products to Vista | Deep studies |
-| 1 | **vista** | Stability screen and Gates 0–6 for new products | Commits to a product |
-| 2 | **quill** | Website, product and IndiaMART copy | Edits the site |
-| 2 | **pulse** | Facebook and LinkedIn post drafts, KPI logging | Posts |
-| 0/2 | **compass** | Registrations, certifications, HS code, duties | Files or signs |
-| 3 | **ledger** | Orders, P&L, cash, FOB maths | Invoices, moves money |
-| 3 | **courier** | Shipments and document checklist | Books or releases documents |
+| All | **Atlas [your chief of staff]** (`atlas`) | Digests, weekly review, approvals triage, conflicts | Contacts anyone |
+| 1 | **Scout [your buyer researcher]** (`scout`) | Finds and verifies buyers | Contacts anyone |
+| 1 | **Harvest [your supplier sourcing lead]** (`harvest`) | Supplier research, scorecard, quotes, samples | Agrees prices or terms |
+| 1 | **Herald [your outreach writer]** (`herald`) | Drafts outreach for founder approval | Sends, negotiates |
+| 1 | **Radar [your opportunity scout]** (`radar`) | Opportunity cards; passes products to Vista | Deep studies |
+| 1 | **Vista [your diversification researcher]** (`vista`) | Stability screen and Gates 0–6 for new products | Commits to a product |
+| 2 | **Quill [your website and listings writer]** (`quill`) | Website, product and IndiaMART copy | Edits the site |
+| 2 | **Pulse [your social media manager]** (`pulse`) | Facebook and LinkedIn post drafts, KPI logging | Posts |
+| 0/2 | **Compass [your compliance tracker]** (`compass`) | Registrations, certifications, HS code, duties | Files or signs |
+| 3 | **Ledger [your orders and finance tracker]** (`ledger`) | Orders, P&L, cash, FOB maths | Invoices, moves money |
+| 3 | **Courier [your logistics coordinator]** (`courier`) | Shipments and document checklist | Books or releases documents |
 
 No agent has a tool that can send email, post, pay or file. Agents log to the shared tracker (BRIEF §5) with `agent:tracker`, and the read-capable agents (atlas, scout, harvest, vista, compass, ledger, courier) can read dashboard data with `agent:read`. Those two commands are the only shell commands agents may run; both are pre-approved in `.claude/settings.json`. New agent files load in a **new** Claude Code session.
 
@@ -86,13 +86,13 @@ Shown in the Claude desktop app sidebar under **Scheduled** (with run history an
 
 | Agent | When (IST) | Status |
 |---|---|---|
-| Atlas daily digest | Weekdays ~9 AM | Scheduled |
-| Vista diversification research | Mondays ~9:30 AM | Scheduled |
-| Scout buyer verification (10 prospects) | Tuesdays 10 AM | Blocked by safety check, not yet created |
-| Harvest supplier review (8 suppliers) | Wednesdays 10 AM | Blocked by safety check, not yet created |
-| Radar opportunity scan | Thursdays ~10 AM | Scheduled |
-| Compass compliance check | Fridays ~10 AM | Scheduled |
-| Atlas weekly review | Fridays 5 PM | Blocked by safety check, not yet created |
+| Atlas [your chief of staff]: daily digest | Weekdays ~9 AM | Scheduled |
+| Vista [your diversification researcher]: research step | Mondays ~9:30 AM | Scheduled |
+| Scout [your buyer researcher]: verify 10 prospects | Tuesdays ~10 AM | Scheduled |
+| Harvest [your supplier sourcing lead]: review 8 suppliers | Wednesdays ~10 AM | Scheduled |
+| Radar [your opportunity scout]: opportunity scan | Thursdays ~10 AM | Scheduled |
+| Compass [your compliance tracker]: compliance check | Fridays ~10 AM | Scheduled |
+| Atlas [your chief of staff]: weekly review | Fridays ~5 PM | Scheduled |
 
 Herald, Quill and Pulse produce drafts for review, so they run on request. Ledger and Courier wait for first orders.
 
