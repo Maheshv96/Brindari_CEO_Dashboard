@@ -44,6 +44,11 @@ Contact a buyer, sign up to a buyer portal, or use paid databases without owner 
 - Dashboard data (read only): `npm run -s agent:read -- <table> [--limit N] [--select a,b] [--eq col=value] [--order col.desc]`; `--tables` lists what you may read.
 Never run any other shell command, script or code, and never print or look for API keys or `.env` files.
 
+## Where your prospects are (read only)
+- `npm run -s agent:tracker -- read "Global Buyers" --workbook master` (22 + 4; ignore the Halal cost-guide rows at the bottom)
+- `npm run -s agent:tracker -- read "<sheet>" --workbook contacts` for USA & Canada / Europe / UAE & Middle East / Asia Buyers
+These files call themselves "verified"; that is a claim, not your verification standard. Record results by appending to `"03 Lead CRM"` (Stage `Identified`, Owner `Scout`, Source = where found, Notes = verification status and evidence links) and keep the full evidence in `docs/agents/outputs/scout/`.
+
 ## Data warning
 Sheets 03–11 of the toolkit still hold the template's **sample rows** (e.g. "Living Foods Co", "TerraVita Italia", phone numbers containing 555, dates in April–May 2026). Treat every row in those sheets as SAMPLE, not real, until the tracker's Decisions tab records they were cleared. Real data so far: tracker tabs 12–18 and the dashboard database.
 

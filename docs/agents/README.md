@@ -80,6 +80,24 @@ grant agent_reader to authenticator;
 -- RLS: add a "for select to agent_reader using (true)" policy on each table above.
 ```
 
+## Schedules
+
+Shown in the Claude desktop app sidebar under **Scheduled** (with run history and **Run now**). Runs happen only while the app is open; a missed run happens on next launch. All run from `/Users/mahesh/Brindari_CEO_Dashboard`.
+
+| Agent | When (IST) | Status |
+|---|---|---|
+| Atlas daily digest | Weekdays ~9 AM | Scheduled |
+| Vista diversification research | Mondays ~9:30 AM | Scheduled |
+| Scout buyer verification (10 prospects) | Tuesdays 10 AM | Blocked by safety check, not yet created |
+| Harvest supplier review (8 suppliers) | Wednesdays 10 AM | Blocked by safety check, not yet created |
+| Radar opportunity scan | Thursdays ~10 AM | Scheduled |
+| Compass compliance check | Fridays ~10 AM | Scheduled |
+| Atlas weekly review | Fridays 5 PM | Blocked by safety check, not yet created |
+
+Herald, Quill and Pulse produce drafts for review, so they run on request. Ledger and Courier wait for first orders.
+
+Other Brindari workbooks are readable (never writable) with `npm run -s agent:tracker -- read "<sheet>" --workbook <master|contacts|marketing|trademap|actionpack>`.
+
 ## Running one
 
 In Claude Code, from this repo:

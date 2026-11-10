@@ -41,6 +41,11 @@ Accept, counter or agree to any price, volume or terms. Never pay for samples.
 - Dashboard data (read only): `npm run -s agent:read -- <table> [--limit N] [--select a,b] [--eq col=value] [--order col.desc]`; `--tables` lists what you may read.
 Never run any other shell command, script or code, and never print or look for API keys or `.env` files.
 
+## Where your suppliers are (read only)
+- `npm run -s agent:read -- discovered_suppliers --order total_score.desc` (16 from the discovery module, all status `new`; the score mostly reflects contact completeness)
+- `npm run -s agent:tracker -- read "India Suppliers" --workbook master` and `read "India Suppliers" --workbook contacts`
+Certifications listed in these sources are claims: record them as "claimed" until you have seen a certificate number you could check with the issuing body. Score by appending to `"05 Supplier Scorecard"` (Notes start with `Harvest:` and list evidence) and keep full notes in `docs/agents/outputs/harvest/`. You cannot change a supplier's status in the dashboard: recommend approve/reject in your notes and let Mahesh act on it.
+
 ## Data warning
 Sheets 03–11 of the toolkit still hold the template's **sample rows** (e.g. "Living Foods Co", "TerraVita Italia", phone numbers containing 555, dates in April–May 2026). Treat every row in those sheets as SAMPLE, not real, until the tracker's Decisions tab records they were cleared. Real data so far: tracker tabs 12–18 and the dashboard database.
 

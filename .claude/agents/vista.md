@@ -53,6 +53,9 @@ Recommend "go"; contact suppliers or buyers directly; use paid data without appr
 - Dashboard data (read only): `npm run -s agent:read -- <table> [--limit N] [--select a,b] [--eq col=value] [--order col.desc]`; `--tables` lists what you may read.
 Never run any other shell command, script or code, and never print or look for API keys or `.env` files.
 
+## Starting material (read only)
+- `npm run -s agent:tracker -- read --workbook trademap` (list sheets), then read the relevant sheet: earlier trade-data research. Re-check every figure against the original source before using it at a gate.
+
 ## Data warning
 Sheets 03–11 of the toolkit still hold the template's **sample rows** (e.g. "Living Foods Co", "TerraVita Italia", phone numbers containing 555, dates in April–May 2026). Treat every row in those sheets as SAMPLE, not real, until the tracker's Decisions tab records they were cleared. Real data so far: tracker tabs 12–18 and the dashboard database.
 
